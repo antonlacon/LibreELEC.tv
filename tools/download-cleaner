@@ -4,11 +4,14 @@
 # Copyright (C) 2018 Ian Leonard (antonlacon@gmail.com)
 #
 # Scan through the given directory looking for out of date source packages.
-# If a source tarball is found that is different from what is currently in tree
-# print out the discovered files. Delete the directory when the package is no
-# longer present.
+# If a source tarball is found that is different from what is currently in
+# tree, then print out the discovered files.
 #
-# If -d is passed to the script, also delete the files.
+# If -d is passed, also delete obsolete files.
+# If -f is passed, fetch updated source tarballs.
+# If -b is passed, build a new SOURCES, populated from the old SOURCES
+#   Set NEW_SOURCES_DIR to customize the temp dir to use in building
+# If -r is passed, replace the old SOURCES when finished building new SOURCES
 
 set -e
 
@@ -16,19 +19,27 @@ set -e
 
 # default variables
 DESTRUCTIVE_RUN="false"
+FETCH_UPDATES="false"
+PACKAGES_TO_UPDATE=()
+BUILD_SOURCES="false"
+REPLACE_OLD="false"
+NEW_SOURCES="${NEW_SOURCES_DIR:-${SOURCES}.new}"
 
 
 # helper functions
 help(){
-  echo "Usage: ${0} [-hd]"
+  echo "Usage: ${0} [-hdfbr]"
     echo "Set PROJECT, DEVICE and ARCH as required."
     echo "  -h this help"
-    echo "  -d delete files (default: no)"
+    echo "  -d delete obsolete source packages (default no)"
+    echo "  -f fetch updated source packages (default: no)"
+    echo "  -b build new SOURCES content (default: no)"
+    echo "  -r replace old SOURCES when rebuilding (default: no)"
 }
 
 
 # command line opts
-while getopts hd OPT; do
+while getopts hdfrb OPT; do
   case "${OPT}" in
     h)
       help
@@ -36,6 +47,15 @@ while getopts hd OPT; do
       ;;
     d)
       DESTRUCTIVE_RUN="true"
+      ;;
+    f)
+      FETCH_UPDATES="true"
+      ;;
+    b)
+      BUILD_SOURCES="true"
+      ;;
+    r)
+      REPLACE_OLD="true"
       ;;
     \?)
       # error and output help on unknown
@@ -51,6 +71,8 @@ shift $((${OPTIND}-1))
 # sanity checking
 if [ ! -d "${SOURCES}" ]; then
   die "error: ${SOURCES} is not a directory"
+elif [ "${DESTRUCTIVE_RUN}" = "true" -a "${BUILD_SOURCES}" = "true" ]; then
+  die "error: options '-d' and '-b' are mutually exclusive"
 fi
 
 
@@ -61,8 +83,10 @@ for SOURCE_PACKAGE in $(find "${SOURCES}/" -mindepth 1 -type d); do
 
   # check if package is still in the tree to selectively prune, or delete the dir
   PACKAGE_DIR=$(get_pkg_directory "${PACKAGE_NAME}")
-  if [ -n "${PACKAGE_DIR}"  ]; then
-    CUR_PACKAGE_FILE=$(basename $(get_pkg_variable "${PACKAGE_NAME}" "PKG_SOURCE_NAME"))
+  PACKAGE_SOURCE_FILE=$(get_pkg_variable "${PACKAGE_NAME}" "PKG_SOURCE_NAME")
+  # PACKAGE_DIR is null if not in tree, PACKAGE_SOURCE_FILE is null if PKG_ARCH mismatch
+  if [ -n "${PACKAGE_DIR}" -a -n "${PACKAGE_SOURCE_FILE}" ]; then
+    CUR_PACKAGE_FILE=$(basename "${PACKAGE_SOURCE_FILE}")
 
     for FILE in $(find "${SOURCE_PACKAGE}/" -type f); do
       # don't test auxilliary files
@@ -70,12 +94,19 @@ for SOURCE_PACKAGE in $(find "${SOURCES}/" -mindepth 1 -type d); do
         continue
       fi
 
-      # list all files that would be deleted
+      # obsolete file handling
       if [ "${FILE}" != "${SOURCES}/${PACKAGE_NAME}/${CUR_PACKAGE_FILE}" ]; then
         ls -1 "${FILE}"*
+        PACKAGES_TO_UPDATE+="${PACKAGE_NAME}"
+
         if [ "${DESTRUCTIVE_RUN}" = "true" ]; then
           rm "${FILE}"*
         fi
+      # current file handling
+      elif [ "${BUILD_SOURCES}" = "true" ]; then
+        echo "Relocating ${PACKAGE_NAME} files..."
+        mkdir -p "${NEW_SOURCES}/${PACKAGE_NAME}"
+        mv "${FILE}"* "${NEW_SOURCES}/${PACKAGE_NAME}/"
       fi
     done
   else
@@ -85,5 +116,20 @@ for SOURCE_PACKAGE in $(find "${SOURCES}/" -mindepth 1 -type d); do
     fi
   fi
 done
+
+if [ "${BUILD_SOURCES}" = "true" -a "${REPLACE_OLD}" = "true" ]; then
+  rm -r "${SOURCES}"
+  mv "${NEW_SOURCES}" "${SOURCES}"
+fi
+
+if [ "${FETCH_UPDATES}" = "true" ]; then
+  if "${BUILD_SOURCES}" = "true" -a "${REPLACE_OLD}" = "false" ]; then
+    SOURCES="${NEW_SOURCES}"
+  fi
+  for PACKAGE in "${PACKAGES_TO_UPDATE[@]}"; do
+    # scripts/get determines if tarball is present before downloading
+    SOURCES_DIR="${SOURCES}" "${SCRIPTS}/get" "${PACKAGE}"
+  done
+fi
 
 exit
