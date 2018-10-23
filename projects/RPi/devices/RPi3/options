@@ -1,0 +1,28 @@
+################################################################################
+# Device defaults
+################################################################################
+
+case ${TARGET_ARCH} in
+  aarch64)
+    TARGET_CPU="cortex-a53"
+    TARGET_CPU_FLAGS="+crc"
+    ;;
+  arm)
+    TARGET_CPU="cortex-a53"
+    TARGET_CPU_FLAGS="+crc"
+    TARGET_FLOAT="hard"
+    TARGET_FPU="neon-fp-armv8"
+    # 64-bit kernel both userlands
+    TARGET_KERNEL_ARCH="arm64"
+    ;;
+esac
+
+# Kernel target
+KERNEL_TARGET="Image"
+
+# Use shared addons
+if [ ${TARGET_ARCH} = "aarch64" ]; then
+  ADDON_PROJECT="ARMv8"
+else
+  ADDON_PROJECT="ARMv7"
+fi
