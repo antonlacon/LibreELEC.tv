@@ -5,14 +5,23 @@
   # The TARGET_CPU variable controls which processor should be targeted for
   # generated code.
     case $TARGET_ARCH in
+      aarch64)
+        # Valid TARGET_CPU for Raspberry Pi based devices are:
+        # cortex-a53 cortex-a72
+        TARGET_CPU="cortex-a53"
+        TARGET_CPU_FLAGS="+crc"
+
+        TARGET_KERNEL_ARCH="arm64"
+        TARGET_FEATURES="64bit"
+        ;;
       arm)
         # Valid TARGET_CPU for Raspberry Pi based devices are:
-        # arm1176jzf-s cortex-a7 cortex-a53
+        # arm1176jzf-s cortex-a7 cortex-a53 cortex-a72
         if [ "$DEVICE" = "RPi" ]; then
           TARGET_CPU="arm1176jzf-s"
         elif [ "$DEVICE" = "RPi2" ]; then
           TARGET_CPU="cortex-a7"
-        elif [ "$DEVICE" = "RPi4" ]; then
+        elif [ "$DEVICE" = "RPi3" -o "$DEVICE" = "RPi4" ]; then
           TARGET_CPU="cortex-a53"
           TARGET_CPU_FLAGS="+crc"
         fi
@@ -30,9 +39,16 @@
           TARGET_FPU="vfp"
         elif [ "$DEVICE" = "RPi2" ]; then
           TARGET_FPU="neon-vfpv4"
-        elif [ "$DEVICE" = "RPi4" ]; then
+        elif [ "$DEVICE" = "RPi3" -o "$DEVICE" = "RPi4" ]; then
           TARGET_FPU="neon-fp-armv8"
         fi
+
+        # Use 64-bit kernel on RPi3
+        if [ "$DEVICE" = "RPi3" ]; then
+          TARGET_KERNEL_ARCH="arm64"
+          TARGET_PATCH_ARCH="aarch64"
+        fi
+
         TARGET_FEATURES="32bit"
         ;;
     esac
@@ -41,7 +57,11 @@
     BOOTLOADER="bcm2835-bootloader"
 
   # Kernel target
-    KERNEL_TARGET="zImage"
+    if [ "$TARGET_KERNEL_ARCH" = "arm64" ]; then
+      KERNEL_TARGET="Image"
+    else
+      KERNEL_TARGET="zImage"
+    fi
 
   # Additional kernel make parameters (for example to specify the u-boot loadaddress)
     KERNEL_MAKE_EXTRACMD="dtbs"
