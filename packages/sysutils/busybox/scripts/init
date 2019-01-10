@@ -47,7 +47,10 @@
   INSTALLED_MEMORY=$(cat /proc/meminfo | grep 'MemTotal:' | awk '{print $2}')
   SYSTEM_TORAM_LIMIT=1024000
 
+  FLASH_NETBOOT="no"
+  STORAGE_NETBOOT="no"
   LIVE="no"
+  ROOTOVERLAY="no"
 
   BREAK_TRIPPED="no"
 
@@ -142,6 +145,9 @@
         LIVE=yes
         SYSLINUX_DEFAULT="live"
         ;;
+      rootoverlay)
+        ROOTOVERLAY=yes
+        ;;
       portable)
         SYSLINUX_DEFAULT="run"
         ;;
@@ -171,6 +177,18 @@
     exec 3>/dev/null
   fi
   SILENT_OUT=3
+
+  # Disable rootoverlay when non-local storage is in use
+  # FIXME: network served /flash should work fine still but testing needed
+  if [ "$FLASH_NETBOOT" = "yes" -o "$STORAGE_NETBOOT" = "yes" ]; then
+    ROOTOVERLAY=no
+  fi
+
+  # Disable rootoverlay when overlay is set
+  # FIXME: I don't know what OVERLAY is doing beyond setting NFS mounts
+  if [ "$OVERLAY" = "yes" ]; then
+    ROOTOVERLAY=no
+  fi
 
   progress() {
     if test "$PROGRESS" = "yes"; then
@@ -1036,6 +1054,16 @@
     mount --move /flash /sysroot/flash
     mount --move /storage /sysroot/storage
 
+    if [ "$ROOTOVERLAY" = "yes" ]; then
+      # Create upper and temp directories on a RW backed store
+      mkdir -p /sysroot/storage/.overlay
+      mkdir -p /sysroot/storage/.overlay/upper
+      mkdir -p /sysroot/storage/.overlay/work
+
+      # Bind RW storage to /overlay for easy access
+      mount --bind /sysroot/storage/.overlay /sysroot/overlay
+    fi
+
     if [ ! -d "/sysroot/usr/lib/kernel-overlays/base/lib/modules/$(uname -r)/" -a -f "/sysroot/usr/lib/systemd/systemd" ]; then
       echo ""
       echo "NEVER TOUCH boot= in syslinux.conf / cmdline.txt!"
@@ -1088,13 +1116,43 @@
       fi
     fi
   done
+
+  if [ "$ROOTOVERLAY" = "yes" ]; then
+    # apply the root overlay
+    /usr/bin/busybox mount -t overlay overlay -o rw,noatime,lowerdir=/sysroot,upperdir=/sysroot/overlay/upper,workdir=/sysroot/overlay/work /sysroot
+
+    # mount /flash again atop the overlay
+    # FIXME Can't use mount_flash as mounting to different location and /flash has moved
+    mount_part "$boot" "/sysroot/flash" "ro,noatime"
+
+    if [ -f /sysroot/flash/post-flash.sh ]; then
+      . /sysroot/flash/post-flash.sh
+    fi
+
+    # mount /storage atop the overlay
+    # FIXME Can't use mount_storage as mounting to different location and /flash has moved
+    if [ "$LIVE" = "yes" ]; then
+      # disk=xx is not allowed in live mode
+      mount -t tmpfs none /sysroot/storage
+    elif [ -n "$disk" ]; then
+      if [ -f /sysroot/flash/mount-storage.sh ]; then
+        . /sysroot/flash/mount-storage.sh
+      else
+        mount_part "$disk" "/sysroot/storage" "rw,noatime"
+      fi
+    else
+      # /storage should always be writable
+      mount -t tmpfs none /sysroot/storage
+    fi
+  fi
+
   # move some special filesystems
   /usr/bin/busybox mount --move /dev /sysroot/dev
   /usr/bin/busybox mount --move /proc /sysroot/proc
   /usr/bin/busybox mount --move /sys /sysroot/sys
   /usr/bin/busybox rm -fr /tmp
 
-  # tell OE settings addon to disable updates
+  # tell LE settings addon to disable updates
   if [ "$UPDATE_DISABLED" = "yes" ] ; then
     echo "" > /sysroot/dev/.update_disabled
   fi
@@ -1103,7 +1161,7 @@
     echo "" > /sysroot/dev/.flash_netboot
   fi
 
-  # swap can not be used over nfs.(see scripts/mount-swap)
+  # swap cannot be used over nfs.(see scripts/mount-swap)
   if [ "$STORAGE_NETBOOT" = "yes" ] ; then
     echo "" > /sysroot/dev/.storage_netboot
   fi

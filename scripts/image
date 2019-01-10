@@ -94,7 +94,7 @@ rm -rf $STAMPS_INSTALL
 mkdir -p $INSTALL
 
 # create baselayout
-for directory in etc dev proc run sys tmp usr var flash storage; do
+for directory in etc dev proc run sys tmp usr var flash storage overlay; do
   mkdir -p $INSTALL/$directory
 done
 ln -sf /var/media $INSTALL/media
