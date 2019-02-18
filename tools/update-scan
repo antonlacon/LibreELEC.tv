@@ -1,0 +1,78 @@
+#!/bin/bash
+
+# SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright (C) 2019-2020 Ian Leonard (antonlacon@gmail.com)
+
+# update-scan: use debian's uscan to check for available package updates
+
+set -e
+
+. config/options ""
+
+# global vars
+CURRENT_PACKAGES=""
+UNKNOWN_PACKAGES=""
+BAD_REGEX_PACKAGES=""
+
+# functions
+help() {
+  echo "Usage: "
+}
+
+check_for_update() {
+  # wipe key variables between uses
+  local PKG_NAME PKG_WATCH PKG_VERSION
+
+  # source package.mk
+  . "${1}"
+
+  if [ -z "${PKG_WATCH}" ]; then
+    UNKNOWN_PACKAGES+=" ${PKG_NAME}"
+    return
+  fi
+
+  uscan_tmpfile=$(mktemp)
+  echo "version=4" > "${uscan_tmpfile}"
+  echo "${PKG_WATCH}" >> "${uscan_tmpfile}"
+
+  upstream_version=$(uscan --no-conf --report-status --package "${PKG_NAME}" --upstream-version "${PKG_VERSION}" --watchfile "${uscan_tmpfile}" 2>&1 | grep '\$newversion' | awk '{print $3}')
+
+  rm "${uscan_tmpfile}"
+
+  if [ -z "${upstream_version}" ]; then
+    BAD_REGEX_PACKAGES+=" ${PKG_NAME}"
+  elif [ "${PKG_VERSION}" != "${upstream_version}" ]; then
+    echo -e "${PKG_NAME}\tcurrent: ${PKG_VERSION}\tupstream: ${upstream_version}"
+  else
+    CURRENT_PACKAGES+=" ${PKG_NAME}"
+  fi
+}
+
+
+# pre-check
+if ! command -v uscan >/dev/null; then
+  die "error: uscan not found; this is required"
+fi
+
+# do work
+if [ -z "${1}" ]; then
+  PACKAGE_LIST=$(find packages/ -type f -name package.mk | sort)
+else
+  PACKAGE_LIST="${@}"
+fi
+
+echo -e "Updates found:"
+for build_file in ${PACKAGE_LIST}; do
+  check_for_update "${build_file}"
+done
+echo ""
+
+if [ -n "${BAD_REGEX_PACKAGES}" ]; then
+  echo -e "Bad info in PKG_WATCH:\n${BAD_REGEX_PACKAGES}\n"
+fi
+if [ -n "${CURRENT_PACKAGES}" ]; then
+  echo -e "Current:\n${CURRENT_PACKAGES}\n"
+fi
+if [ -n "${UNKNOWN_PACKAGES}" ]; then
+  echo -e "Unknown:\n${UNKNOWN_PACKAGES}"
+fi
