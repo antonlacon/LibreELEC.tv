@@ -114,8 +114,6 @@ makeinstall_target() {
       ln -sf dthelper ${INSTALL}/usr/bin/dtsoc
     cp ${PKG_DIR}/scripts/ledfix ${INSTALL}/usr/bin
     cp ${PKG_DIR}/scripts/lsb_release ${INSTALL}/usr/bin/
-    cp ${PKG_DIR}/scripts/apt-get ${INSTALL}/usr/bin/
-    cp ${PKG_DIR}/scripts/sudo ${INSTALL}/usr/bin/
     cp ${PKG_DIR}/scripts/pastebinit ${INSTALL}/usr/bin/
       sed -e "s/@DISTRONAME@-@OS_VERSION@/${DISTRONAME}-${OS_VERSION}/g" \
           -i ${INSTALL}/usr/bin/pastebinit
