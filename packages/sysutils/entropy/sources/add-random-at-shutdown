@@ -1,2 +1,2 @@
 #!/bin/sh
-dd if=/dev/urandom of=/storage/.cache/random.data count=4
+dd if=/dev/urandom of=/storage/.cache/random.data count=4 2>/dev/null
