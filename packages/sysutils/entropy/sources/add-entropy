@@ -11,7 +11,7 @@ def add_entropy(fd, data):
     fcntl.ioctl(fd, RNDADDENTROPY, add)
 
 if not os.path.isfile("/storage/.cache/random.data"):
-    os.system("dd if=/dev/urandom of=/storage/.cache/random.data count=4 >/dev/null")
+    os.system("dd if=/dev/urandom of=/storage/.cache/random.data count=4 2>/dev/null")
 
 cache=os.open("/storage/.cache/random.data", os.O_RDONLY)
 
