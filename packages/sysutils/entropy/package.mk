@@ -21,5 +21,4 @@ makeinstall_target() {
 
 post_install() {
   enable_service add-entropy.service
-  enable_service add-random-at-shutdown.service
 }
