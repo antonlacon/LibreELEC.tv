@@ -210,6 +210,9 @@ post_makeinstall_target() {
   cp $PKG_DIR/scripts/userconfig-setup $INSTALL/usr/bin
   cp $PKG_DIR/scripts/usercache-setup $INSTALL/usr/bin
 
+  # use systemd to set cpufreq governor and tunables
+  find_file_path scripts/cpufreq && cp -PRv $FOUND_PATH $INSTALL/usr/bin
+
   mkdir -p $INSTALL/usr/sbin
   cp $PKG_DIR/scripts/kernel-overlays-setup $INSTALL/usr/sbin
   cp $PKG_DIR/scripts/network-base-setup $INSTALL/usr/sbin
@@ -282,4 +285,5 @@ post_install() {
   enable_service network-base.service
   enable_service systemd-timesyncd.service
   enable_service systemd-timesyncd-setup.service
+  enable_service cpufreq.service
 }
