@@ -221,8 +221,12 @@ setup_toolchain() {
     TARGET_LDFLAGS+=" $LDFLAGS_OPTIM_GOLD"
   fi
 
-  # compiler optimization, descending priority: speed, size, default
-  if flag_enabled "speed" "no"; then
+  # compiler optimization, descending priority: debug, speed, size, default
+  if [ "${BUILD_WITH_DEBUG}" = "yes" ]; then
+    TARGET_CFLAGS+=" $CFLAGS_OPTIM_DEBUG"
+    TARGET_CXXFLAGS+=" $CXXFLAGS_OPTIM_DEBUG"
+    TARGET_LDFLAGS+=" $LDFLAGS_OPTIM_DEBUG"
+  elif flag_enabled "speed" "no"; then
     TARGET_CFLAGS+=" $CFLAGS_OPTIM_SPEED"
     TARGET_CXXFLAGS+=" $CXXFLAGS_OPTIM_SPEED"
   elif flag_enabled "size" "no"; then
