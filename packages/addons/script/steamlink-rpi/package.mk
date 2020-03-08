@@ -22,26 +22,22 @@ PKG_ADDON_PROVIDES="executable"
 PKG_STEAMLINK_VERSION="1.1.64.162"
 PKG_STEAMLINK_HASH="1ea1c41802bd6cc3efdba7ba258b9d25d5c07cdd1d0ffe9f2d47597588a09155"
 
-make_target() {
-  :
-}
-
 addon() {
   # Add needed libraries
   mkdir -p ${ADDON_BUILD}/${PKG_ADDON_ID}/system-libs
 
   # libpng
-  cp -L $(get_build_dir steamlink-libpng)/.${TARGET_NAME}/.libs/libpng16.so.16 ${ADDON_BUILD}/${PKG_ADDON_ID}/system-libs/
+  cp -L $(get_install_dir steamlink-libpng)/usr/lib/libpng16.so.16 ${ADDON_BUILD}/${PKG_ADDON_ID}/system-libs/
 
   # libjpeg-turbo
-  cp -L $(get_build_dir steamlink-libjpeg-turbo)/.${TARGET_NAME}/libjpeg.so.62 ${ADDON_BUILD}/${PKG_ADDON_ID}/system-libs/
+  cp -L $(get_install_dir steamlink-libjpeg-turbo)/usr/lib/libjpeg.so.62 ${ADDON_BUILD}/${PKG_ADDON_ID}/system-libs/
 
   # libXext
-  cp -L $(get_build_dir steamlink-libXext)/.${TARGET_NAME}/src/.libs/libXext.so.6 ${ADDON_BUILD}/${PKG_ADDON_ID}/system-libs/
+  cp -L $(get_install_dir steamlink-libXext)/usr/lib/libXext.so.6 ${ADDON_BUILD}/${PKG_ADDON_ID}/system-libs/
 
   # libX11
-  cp -L $(get_build_dir steamlink-libX11)/.${TARGET_NAME}/src/.libs/libX11.so.6 ${ADDON_BUILD}/${PKG_ADDON_ID}/system-libs/
-  cp -L $(get_build_dir steamlink-libX11)/.${TARGET_NAME}/src/.libs/libX11-xcb.so.1 ${ADDON_BUILD}/${PKG_ADDON_ID}/system-libs/
+  cp -L $(get_install_dir steamlink-libX11)/usr/lib/libX11.so.6 ${ADDON_BUILD}/${PKG_ADDON_ID}/system-libs/
+  cp -L $(get_install_dir steamlink-libX11)/usr/lib/libX11-xcb.so.1 ${ADDON_BUILD}/${PKG_ADDON_ID}/system-libs/
 }
 
 post_install_addon() {
