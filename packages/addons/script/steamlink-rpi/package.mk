@@ -18,8 +18,9 @@ PKG_ADDON_NAME="steamlink-rpi"
 PKG_ADDON_TYPE="xbmc.python.script"
 PKG_ADDON_PROVIDES="executable"
 
-PKG_STEAMLINK_VERSION="1.1.60.143"
-PKG_STEAMLINK_HASH="b15214ca36e0f43cc175b0b437cbdeea1145345fbb23acda2884acd3c75affa7"
+# XXX: STEAMLINK_VERSION set in source/default.py - no post_install_addon() in LE9.2
+#PKG_STEAMLINK_VERSION="1.1.60.143"
+#PKG_STEAMLINK_HASH="b15214ca36e0f43cc175b0b437cbdeea1145345fbb23acda2884acd3c75affa7"
 
 make_target() {
   :
@@ -43,9 +44,9 @@ addon() {
   cp -L $(get_build_dir steamlink-libX11)/.${TARGET_NAME}/src/.libs/libX11-xcb.so.1 ${ADDON_BUILD}/${PKG_ADDON_ID}/system-libs/
 }
 
-post_install_addon() {
-  # Add steamlink version to download to addon
-  sed -e "s/@STEAMLINK_VERSION@/${PKG_STEAMLINK_VERSION}/" \
-      -e "s/@STEAMLINK_HASH@/${PKG_STEAMLINK_HASH}/" \
-      -i ${ADDON_BUILD}/${PKG_ADDON_ID}/default.py
-}
+#post_install_addon() {
+#  # Add steamlink version to download to addon
+#  sed -e "s/@STEAMLINK_VERSION@/${PKG_STEAMLINK_VERSION}/" \
+#      -e "s/@STEAMLINK_HASH@/${PKG_STEAMLINK_HASH}/" \
+#      -i ${ADDON_BUILD}/${PKG_ADDON_ID}/default.py
+#}
