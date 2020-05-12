@@ -25,6 +25,11 @@ if [ $(grep -c "/lib/udev/rules.d" /proc/mounts) -eq 0 ]; then
   udevadm trigger
 fi
 
+# use alsa for steamlink; make sure a sound card is present
+if [ ! -d /proc/asound ]; then
+  dtparam audio=on
+fi
+
 # Launch steamlink
 # xxx: shutdown kodi or controller input goes to kodi too
 systemctl stop kodi
