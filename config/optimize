@@ -1,5 +1,5 @@
 # Linker hash-style is set to gnu via gcc default
-LD_OPTIM="-Wl,--as-needed"
+LD_OPTIM="-Wl,--sort-common -Wl,--as-needed"
 
 TARGET_CPPFLAGS=""
 TARGET_CFLAGS="$TARGET_CFLAGS -Wall -pipe $PROJECT_CFLAGS"
@@ -35,12 +35,15 @@ LDFLAGS_OPTIM_LINKER_MOLD="-fuse-ld=mold"
 # default compiler optimization
 CFLAGS_OPTIM_DEFAULT="-O2 -fomit-frame-pointer -DNDEBUG"
 CXXFLAGS_OPTIM_DEFAULT="$CFLAGS_OPTIM_DEFAULT"
+LDFLAGS_OPTIM_DEFAULT="-Wl,-O1"
 # speed flag
 CFLAGS_OPTIM_SPEED="-O3 -fomit-frame-pointer -DNDEBUG"
 CXXFLAGS_OPTIM_SPEED="$CFLAGS_OPTIM_SPEED"
+LDFLAGS_OPTIM_SPEED="$LDLAGS_OPTIM_DEFAULT"
 # size flag
 CFLAGS_OPTIM_SIZE="-Os -fomit-frame-pointer -DNDEBUG"
 CXXFLAGS_OPTIM_SIZE="$CFLAGS_OPTIM_SIZE"
+LDFLAGS_OPTIM_SIZE="$LDLAGS_OPTIM_DEFAULT"
 # debug settings
 CFLAGS_OPTIM_DEBUG="-ggdb -Og"
 CXXFLAGS_OPTIM_DEBUG="$CFLAGS_OPTIM_DEBUG"
