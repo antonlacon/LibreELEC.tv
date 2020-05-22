@@ -318,7 +318,7 @@ setup_toolchain() {
 
   TARGET_LDFLAGS+=" ${!linker_opts}"
 
-  # compiler optimization, descending priority: speed, size, default
+  # compiler optimization, descending priority: debug, speed, size, default
   if [ "${BUILD_WITH_DEBUG}" = "yes" ]; then
     if [ "${SPLIT_DEBUG_INFO}" = "yes" -a "${linker}" = "gold" ]; then
       TARGET_CFLAGS+=" $CFLAGS_OPTIM_DEBUG_SPLIT"
@@ -332,12 +332,15 @@ setup_toolchain() {
   elif flag_enabled "speed" "no"; then
     TARGET_CFLAGS+=" $CFLAGS_OPTIM_SPEED"
     TARGET_CXXFLAGS+=" $CXXFLAGS_OPTIM_SPEED"
+    TARGET_LDFLAGS+=" $LDFLAGS_OPTIM_SPEED"
   elif flag_enabled "size" "no"; then
     TARGET_CFLAGS+=" $CFLAGS_OPTIM_SIZE"
     TARGET_CXXFLAGS+=" $CXXFLAGS_OPTIM_SIZE"
+    TARGET_LDFLAGS+=" $LDFLAGS_OPTIM_SIZE"
   else
     TARGET_CFLAGS+=" $CFLAGS_OPTIM_DEFAULT"
     TARGET_CXXFLAGS+=" $CXXFLAGS_OPTIM_DEFAULT"
+    TARGET_LDFLAGS+=" $LDFLAGS_OPTIM_DEFAULT"
   fi
 
   # Only build host binaries with native when BUILD_REUSABLE is not set
