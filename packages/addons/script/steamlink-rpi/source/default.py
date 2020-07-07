@@ -8,9 +8,10 @@ import xbmcaddon
 import xbmcgui
 from hashlib import sha256
 from pathlib import Path
-from tempfile import TemporaryDirectory
 from shutil import rmtree
 from sys import exit
+from tempfile import TemporaryDirectory
+from time import sleep
 from urllib.request import urlretrieve
 
 
@@ -19,6 +20,7 @@ STEAMLINK_HASH = "@STEAMLINK_HASH@"
 STEAMLINK_TARBALL_NAME = f"steamlink-rpi3-{STEAMLINK_VERSION}.tar.gz"
 STEAMLINK_URL = f"http://media.steampowered.com/steamlink/rpi/{STEAMLINK_TARBALL_NAME}"
 ADDON_DIR = xbmcaddon.Addon().getAddonInfo("path")
+PROGRESS_BAR = xbmcgui.DialogProgress()
 
 
 def GetSHA256Hash(file_name):
@@ -48,24 +50,38 @@ def OutputFileContents(file):
   with open(file) as data:
     return data.read()
 
+def ProgressBarReport(chunk_count, chunk_size, total_size):
+  """ Use urlretrieve's reporthook to report progress """
+  if total_size != -1:
+    progress_percentage = int(chunk_count * chunk_size / total_size * 100)
+    PROGRESS_BAR.update(progress_percentage)
+  else:
+    PROGRESS_BAR.update(0, "Filesize Unknown")
+
 def DownloadSteamlink():
   """ Download Steam Link for RPi """
   with TemporaryDirectory() as temp_dir:
     STEAMLINK_TEMP_PATH = os.path.join(temp_dir, STEAMLINK_TARBALL_NAME)
 
-    xbmcgui.Dialog().notification("Steam Link", "Downloading Steam Link (about 60MiB)", xbmcgui.NOTIFICATION_INFO, 5000)
-    urlretrieve(STEAMLINK_URL, STEAMLINK_TEMP_PATH)
+    PROGRESS_BAR.create("Steam Link", f"Downloading Steam Link Version: {STEAMLINK_VERSION}...")
+    urlretrieve(STEAMLINK_URL, STEAMLINK_TEMP_PATH, ProgressBarReport)
+
     if tarfile.is_tarfile(STEAMLINK_TEMP_PATH):
       DOWNLOAD_HASH = GetSHA256Hash(STEAMLINK_TEMP_PATH)
       if STEAMLINK_HASH == DOWNLOAD_HASH:
-        xbmcgui.Dialog().notification("Steam Link", "Download complete, extracting...", xbmcgui.NOTIFICATION_INFO, 5000)
+        PROGRESS_BAR.update(100, f"Extracting Steam Link Version {STEAMLINK_VERSION}...")
         STEAMLINK_TARBALL = tarfile.open(STEAMLINK_TEMP_PATH)
         STEAMLINK_TARBALL.extractall(path=f"{ADDON_DIR}/")
+        PROGRESS_BAR.close()
       else:
-        xbmcgui.Dialog().notification("Steam Link", "Download error: bad file hash, try again later", xbmcgui.NOTIFICATION_INFO, 5000)
+        PROGRESS_BAR.update(0, "Download Error: bad file hash. Try again later.")
+        sleep(5)
+        PROGRESS_BAR.close()
         exit(1)
     else:
-      xbmcgui.Dialog().notification("Steam Link", "Download error: bad download or missing file", xbmcgui.NOTIFICATION_INFO, 5000)
+      PROGRESS_BAR.update(0, "Download Error: bad download or missing file")
+      sleep(5)
+      PROGRESS_BAR.close()
       exit(1)
 
 def PrepareSteamlink():
