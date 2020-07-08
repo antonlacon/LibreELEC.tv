@@ -71,7 +71,11 @@
 
   # Kernel to use. values can be:
   # default:  default mainline kernel
-    LINUX="raspberrypi"
+    if [ "$TARGET_KERNEL_ARCH" = "arm64" ]; then
+      LINUX="raspberrypi64"
+    else
+      LINUX="raspberrypi"
+    fi
 
 ################################################################################
 # setup build defaults
