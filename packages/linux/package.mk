@@ -28,6 +28,13 @@ case "${LINUX}" in
     PKG_URL="https://github.com/raspberrypi/linux/archive/${PKG_VERSION}.tar.gz"
     PKG_SOURCE_NAME="linux-${LINUX}-${PKG_VERSION}.tar.gz"
     ;;
+  raspberrypi64)
+    PKG_VERSION="eaf07c3a977e7210896bf66e65969252741b9d74" # 6.1.10
+    PKG_SHA256="f0c0dff91bcb8b328e678708d5012b4dfae62af042c3b19ede4545e27f9d3d85"
+    PKG_URL="https://github.com/raspberrypi/linux/archive/${PKG_VERSION}.tar.gz"
+    PKG_SOURCE_NAME="linux-${LINUX}-${PKG_VERSION}.tar.gz"
+    PKG_PATCH_DIRS="raspberrypi"
+    ;;
   *)
     PKG_VERSION="6.1.14"
     PKG_SHA256="a27076011efec7ad11e9ed0644f512c34cab4c5ed5ba42cfe71c83fabebe810d"
