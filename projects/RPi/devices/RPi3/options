@@ -20,6 +20,9 @@ esac
 # Kernel target
 KERNEL_TARGET="Image"
 
+# use own raspberry pi linux branch
+LINUX="raspberrypi64"
+
 # Use shared addons
 if [ ${TARGET_ARCH} = "aarch64" ]; then
   ADDON_PROJECT="ARMv8"
