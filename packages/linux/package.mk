@@ -29,6 +29,13 @@ case "${LINUX}" in
     PKG_SOURCE_NAME="linux-${LINUX}-${PKG_VERSION}.tar.gz"
     PKG_PATCH_DIRS="raspberrypi"
     ;;
+  raspberrypi64)
+    PKG_VERSION="c575ed8cd074b02e356e87269a544dbffe1a2c84" # 6.6.16
+    PKG_SHA256="6ce7c5866b75d8d6fc857f658098e9a1b6541ad8bead2675c0e9af42debdfc03"
+    PKG_URL="https://github.com/raspberrypi/linux/archive/${PKG_VERSION}.tar.gz"
+    PKG_SOURCE_NAME="linux-${LINUX}-${PKG_VERSION}.tar.gz"
+    PKG_PATCH_DIRS="raspberrypi"
+  ;;
   rockchip)
     PKG_VERSION="05f7e89ab9731565d8a62e3b5d1ec206485eeb0b" # 6.19.0
     PKG_SHA256="9e2cf7d100fba5c8a8d4f68f8a4926e8ae2a9d47ed6506a8796a19b1fb103b09"
