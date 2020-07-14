@@ -24,9 +24,6 @@ else
   DISK_LABEL=msdos
 fi
 
-# STORAGE_SIZE must be >= 32! Alter busybox init script if this value changes.
-STORAGE_SIZE=32
-
 DISK_START_PADDING=$(( (${SYSTEM_PART_START} + 2048 - 1) / 2048 ))
 DISK_GPT_PADDING=1
 DISK_SIZE=$(( ${DISK_START_PADDING} + ${SYSTEM_SIZE} + ${STORAGE_SIZE} + ${DISK_GPT_PADDING} ))

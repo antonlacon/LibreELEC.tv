@@ -65,6 +65,13 @@
 # swapfile size if SWAP_SUPPORT=yes in MB
   SWAPFILESIZE="128"
 
+# filesystem for storage partition (ext4)
+  STORAGE_FILESYSTEM="ext4"
+
+# Size of storage partition, in MB. Must be >=32
+# Several assumptions must be manually updated if this is changed!
+  STORAGE_SIZE=32
+
 # debug tty path
   DEBUG_TTY="/dev/tty3"
 
