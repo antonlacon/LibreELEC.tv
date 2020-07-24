@@ -14,3 +14,6 @@ fi
 # Space separated list is supported,
 # e.g. ADDITIONAL_DRIVERS="DRIVER1 DRIVER2"
 ADDITIONAL_DRIVERS="rpi-cirrus-config"
+
+# disable crazycat and dvb
+DRIVER_ADDONS=""
