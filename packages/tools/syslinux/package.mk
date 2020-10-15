@@ -3,12 +3,13 @@
 # Copyright (C) 2018-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="syslinux"
-PKG_VERSION="6.04-pre1"
-PKG_SHA256="3f6d50a57f3ed47d8234fd0ab4492634eb7c9aaf7dd902f33d3ac33564fd631d"
+PKG_VERSION="458a54133ecdf1685c02294d812cb562fe7bf4c3" # 6.04-pre3
+PKG_SHA256="013661efc770a7e12206acb14edf3c670b2b514352e9a4bae1039102104c1445"
 PKG_ARCH="x86_64"
 PKG_LICENSE="GPL"
 PKG_SITE="http://syslinux.zytor.com/"
-PKG_URL="http://www.kernel.org/pub/linux/utils/boot/$PKG_NAME/Testing/6.04/$PKG_NAME-$PKG_VERSION.tar.xz"
+#PKG_URL="http://www.kernel.org/pub/linux/utils/boot/$PKG_NAME/Testing/6.04/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_URL="https://repo.or.cz/syslinux.git/snapshot/$PKG_VERSION.tar.gz"
 PKG_DEPENDS_HOST="util-linux:host"
 PKG_DEPENDS_TARGET="toolchain util-linux e2fsprogs syslinux:host"
 PKG_LONGDESC="The SYSLINUX project covers lightweight linux bootloaders."

@@ -1,16 +1,6 @@
 https://bugs.gentoo.org/705730
 
 gcc-10 enabled f-no-common by default. Broke syslinux linking.
---- a/mk/com32.mk
-+++ b/mk/com32.mk
-@@ -47,6 +47,7 @@ GCCOPT += $(call gcc_ok,-falign-functions=0,-malign-functions=0)
- GCCOPT += $(call gcc_ok,-falign-jumps=0,-malign-jumps=0)
- GCCOPT += $(call gcc_ok,-falign-labels=0,-malign-labels=0)
- GCCOPT += $(call gcc_ok,-falign-loops=0,-malign-loops=0)
-+GCCOPT += $(call gcc_ok,-fcommon)
- 
- ifeq ($(FWCLASS),EFI)
- GCCOPT += -mno-red-zone
 --- a/mk/elf.mk
 +++ b/mk/elf.mk
 @@ -42,6 +42,7 @@ GCCOPT += $(call gcc_ok,-falign-functions=0,-malign-functions=0)
