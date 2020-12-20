@@ -21,12 +21,10 @@ help() {
 
 check_for_update() {
   # wipe key variables between uses
-  local PKG_NAME PKG_WATCH PKG_VERSION
+  local PKG_NAME PKG_URL PKG_VERSION PKG_WATCH
 
   # source package.mk
-  unset PKG_URL
   . "${1}"
-  uscan_opts=""
   if [ -z "${PKG_WATCH}" ]; then
     # if PKG_VERSION is git hash
     if [[ ${PKG_VERSION} =~ ^[a-z0-9]{40} ]]; then
@@ -36,21 +34,28 @@ check_for_update() {
       PACKAGES_NOURL+=" ${PKG_NAME}"
       return
     else
+      # GitHub archives
       if [[ ${PKG_URL} =~ ^https://github.com/[0-9A-Za-z._-]+/[0-9A-Za-z._-]+/archive/.*$ ]]; then
-        PKG_WATCH="${PKG_URL%archive/*}"
-        PKG_WATCH+="tags (?:.*?/)(?i)(?:|v|release|$PKG_NAME)?@ANY_VERSION@@ARCHIVE_EXT@"
-        # uscan options to disallow beta and rc versions
-        #not working ? #uscan_opts='opts=uversionmangle=s/(\d)[_\.\-\+]?((RC|rc|Pre|pre|dev|beta|alpha)[\-\.]?\d*)$/$1~$2/'
+        PKG_WATCH="${PKG_URL%archive/*}tags (?:.*?/)(?i)(?:|v|release|$PKG_NAME)?@ANY_VERSION@@ARCHIVE_EXT@"
+      # GitHub releases
+      elif [[ ${PKG_URL} =~ ^https://github.com/[0-9A-Za-z._-]+/[0-9A-Za-z._-]+/releases/download/.* ]]; then
+        PKG_WATCH="${PKG_URL%download/*} (?:.*?/)(?i)(?:|v|release|$PKG_NAME)?@ANY_VERSION@@ARCHIVE_EXT@"
+      # SOURCEFORGE_SRC
+      elif [[ ${PKG_URL} =~ ^https://prdownloads.sourceforge.net/* ]] || \
+           [[ ${PKG_URL} =~ ^https://downloads.sourceforge.net/* ]] || \
+           [[ ${PKG_URL} =~ ^https://sourceforge.net/* ]]; then
+        PKG_WATCH="https://qa.debian.org/watch/sf.php/$PKG_NAME/$PKG_NAME[-_.]?@ANY_VERSION@@ARCHIVE_EXT@"
       else
-        PACKAGES_UNKNOWN+=" ${PKG_NAME}"
-        return
+        PKG_WATCH="${PKG_URL%/*} ${PKG_NAME}[_\.\-\+]@ANY_VERSION@@ARCHIVE_EXT@"
+#        PACKAGES_UNKNOWN+=" ${PKG_NAME}"
+#        return
       fi
     fi
   fi
 
   uscan_tmpfile=$(mktemp)
   echo "version=4" > "${uscan_tmpfile}"
-  echo "${uscan_opts} ${PKG_WATCH}" >> "${uscan_tmpfile}"
+  echo "${PKG_WATCH}" >> "${uscan_tmpfile}"
 
   upstream_version=$(uscan --no-conf --report-status --package "${PKG_NAME}" --upstream-version "${PKG_VERSION}" --watchfile "${uscan_tmpfile}" 2>&1 | grep '\$newversion' | awk '{print $3}')
 
