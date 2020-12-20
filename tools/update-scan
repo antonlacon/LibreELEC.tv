@@ -37,11 +37,8 @@ check_for_update() {
       return
     else
       if [[ ${PKG_URL} =~ ^https://github.com/[0-9A-Za-z._-]+/[0-9A-Za-z._-]+/archive/.*$ ]]; then
-        PKG_WATCH="$(echo $PKG_URL | grep -oE 'https://github.com/[a-zA-Z0-9._-]+/[a-zA-Z0-9._-]+/')"
         PKG_WATCH="${PKG_URL%archive/*}"
-        PACKAGE="$PKG_NAME"
-        PKG_WATCH+="tags .*/(?i)(v|release|$PKG_NAME)?@ANY_VERSION@@ARCHIVE_EXT@"
-        #PKG_WATCH+="tags .*/v?(?i)($PKG_NAME)?[._-]?(\d\S+)\.tar\.gz"
+        PKG_WATCH+="tags (?:.*?/)(?i)(?:|v|release|$PKG_NAME)?@ANY_VERSION@@ARCHIVE_EXT@"
         # uscan options to disallow beta and rc versions
         #not working ? #uscan_opts='opts=uversionmangle=s/(\d)[_\.\-\+]?((RC|rc|Pre|pre|dev|beta|alpha)[\-\.]?\d*)$/$1~$2/'
       else
@@ -60,7 +57,11 @@ check_for_update() {
   rm "${uscan_tmpfile}"
 
   if [ -z "${upstream_version}" ]; then
-    PACKAGES_BAD_REGEX+=" ${PKG_NAME}\n - ${PKG_WATCH}\n - ${PKG_URL}"
+    if [ -z "${1}" ]; then
+      PACKAGES_BAD_REGEX+=" ${PKG_NAME}"
+    else
+      PACKAGES_BAD_REGEX+=" ${PKG_NAME}\n - ${PKG_WATCH}\n - ${PKG_URL}"
+    fi
   elif [ "${PKG_VERSION}" != "${upstream_version}" ]; then
     printf "%-30s | %-15s | %-15s" "${PKG_NAME}" "${PKG_VERSION}" "${upstream_version}"; printf '\n'
   else

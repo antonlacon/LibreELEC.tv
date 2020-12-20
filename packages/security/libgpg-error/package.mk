@@ -8,7 +8,7 @@ PKG_SHA256="4a836edcae592094ef1c5a4834908f44986ab2b82e0824a0344b49df8cdb298f"
 PKG_LICENSE="GPLv2"
 PKG_SITE="https://www.gnupg.org"
 PKG_URL="https://www.gnupg.org/ftp/gcrypt/libgpg-error/$PKG_NAME-$PKG_VERSION.tar.bz2"
-PKG_WATCH="$(dirname ${PKG_URL}) ${PKG_NAME}-(.+)\.(?:zip|tgz|tbz|txz|(?:tar\.(?:gz|bz2|xz)))"
+PKG_WATCH="${PKG_URL%/*} ${PKG_NAME}-@ANY_VERSION@@ARCHIVE_EXT@"
 PKG_DEPENDS_TARGET="toolchain"
 PKG_LONGDESC="A library that defines common error values for all GnuPG components."
 
