@@ -10,9 +10,9 @@ set -e
 . config/options ""
 
 # global vars
-CURRENT_PACKAGES=""
-UNKNOWN_PACKAGES=""
-BAD_REGEX_PACKAGES=""
+PACKAGES_CURRENT=""
+PACKAGES_UNKNOWN=""
+PACKAGES_BAD_REGEX=""
 
 # functions
 help() {
@@ -24,27 +24,47 @@ check_for_update() {
   local PKG_NAME PKG_WATCH PKG_VERSION
 
   # source package.mk
+  unset PKG_URL
   . "${1}"
-
+  uscan_opts=""
   if [ -z "${PKG_WATCH}" ]; then
-    UNKNOWN_PACKAGES+=" ${PKG_NAME}"
-    return
+    # if PKG_VERSION is git hash
+    if [[ ${PKG_VERSION} =~ ^[a-z0-9]{40} ]]; then
+      PACKAGES_GITHASH+=" ${PKG_NAME}"
+      return
+    elif [ -z "${PKG_URL}" ]; then
+      PACKAGES_NOURL+=" ${PKG_NAME}"
+      return
+    else
+      if [[ ${PKG_URL} =~ ^https://github.com/[0-9A-Za-z._-]+/[0-9A-Za-z._-]+/archive/.*$ ]]; then
+        PKG_WATCH="$(echo $PKG_URL | grep -oE 'https://github.com/[a-zA-Z0-9._-]+/[a-zA-Z0-9._-]+/')"
+        PKG_WATCH="${PKG_URL%archive/*}"
+        PACKAGE="$PKG_NAME"
+        PKG_WATCH+="tags .*/(?i)(v|release|$PKG_NAME)?@ANY_VERSION@@ARCHIVE_EXT@"
+        #PKG_WATCH+="tags .*/v?(?i)($PKG_NAME)?[._-]?(\d\S+)\.tar\.gz"
+        # uscan options to disallow beta and rc versions
+        #not working ? #uscan_opts='opts=uversionmangle=s/(\d)[_\.\-\+]?((RC|rc|Pre|pre|dev|beta|alpha)[\-\.]?\d*)$/$1~$2/'
+      else
+        PACKAGES_UNKNOWN+=" ${PKG_NAME}"
+        return
+      fi
+    fi
   fi
 
   uscan_tmpfile=$(mktemp)
   echo "version=4" > "${uscan_tmpfile}"
-  echo "${PKG_WATCH}" >> "${uscan_tmpfile}"
+  echo "${uscan_opts} ${PKG_WATCH}" >> "${uscan_tmpfile}"
 
   upstream_version=$(uscan --no-conf --report-status --package "${PKG_NAME}" --upstream-version "${PKG_VERSION}" --watchfile "${uscan_tmpfile}" 2>&1 | grep '\$newversion' | awk '{print $3}')
 
   rm "${uscan_tmpfile}"
 
   if [ -z "${upstream_version}" ]; then
-    BAD_REGEX_PACKAGES+=" ${PKG_NAME}"
+    PACKAGES_BAD_REGEX+=" ${PKG_NAME}\n - ${PKG_WATCH}\n - ${PKG_URL}"
   elif [ "${PKG_VERSION}" != "${upstream_version}" ]; then
-    echo -e "${PKG_NAME}\tcurrent: ${PKG_VERSION}\tupstream: ${upstream_version}"
+    printf "%-30s | %-15s | %-15s" "${PKG_NAME}" "${PKG_VERSION}" "${upstream_version}"; printf '\n'
   else
-    CURRENT_PACKAGES+=" ${PKG_NAME}"
+    PACKAGES_CURRENT+=" ${PKG_NAME}"
   fi
 }
 
@@ -56,23 +76,32 @@ fi
 
 # do work
 if [ -z "${1}" ]; then
-  PACKAGE_LIST=$(find packages/ -type f -name package.mk | sort)
+  PACKAGE_LIST=$(find packages/ -type f -name package.mk ! -path "packages/mediacenter/*" ! -path "packages/emulation/*" | sort)
 else
-  PACKAGE_LIST="${@}"
+  PACKAGE_LIST="$(find packages/ -type d -name ${1})/package.mk"
 fi
 
-echo -e "Updates found:"
+echo -e "\nUpdates found:\n"
+printf "%-30s | %-15s | %-15s" "Package" "master" "upstream"; printf '\n'
+echo "------------------------------------------------------------------"
+
 for build_file in ${PACKAGE_LIST}; do
   check_for_update "${build_file}"
 done
 echo ""
 
-if [ -n "${BAD_REGEX_PACKAGES}" ]; then
-  echo -e "Bad info in PKG_WATCH:\n${BAD_REGEX_PACKAGES}\n"
+if [ -n "${PACKAGES_BAD_REGEX}" ]; then
+  echo -e "\nBad info in PKG_WATCH:\n${PACKAGES_BAD_REGEX}\n"
 fi
-if [ -n "${CURRENT_PACKAGES}" ]; then
-  echo -e "Current:\n${CURRENT_PACKAGES}\n"
+if [ -n "${PACKAGES_CURRENT}" ]; then
+  echo -e "\nCurrent:\n${PACKAGES_CURRENT}\n"
 fi
-if [ -n "${UNKNOWN_PACKAGES}" ]; then
-  echo -e "Unknown:\n${UNKNOWN_PACKAGES}"
+if [ -n "${PACKAGES_GITHASH}" ]; then
+  echo -e "\nPackages using githash:\n${PACKAGES_GITHASH}"
+fi
+if [ -n "${PACKAGES_NOURL}" ]; then
+  echo -e "\nNo PKG_URL:\n${PACKAGES_NOURL}"
+fi
+if [ -n "${PACKAGES_UNKNOWN}" ]; then
+  echo -e "\nUnknown:\n${PACKAGES_UNKNOWN}"
 fi
