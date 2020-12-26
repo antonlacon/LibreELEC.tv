@@ -48,15 +48,21 @@ noop() {
   :
 }
 
+strip_package_var() {
+  # strip string to just value
+  value="${1##*=}"
+  value="${value#\"}"
+  value="${value%\"}"
+  echo "${value}"
+}
+
 check_for_update() {
   # wipe key variables between uses
-  local PKG_NAME PKG_WATCH PKG_VERSION
+  local PKG_NAME PKG_WATCH PKG_VERSION PKG_ID
 
-  # source package.mk
-  unset PKG_NAME
-  . "${1}" &> /dev/null
-  # TODO - need to remove exit from the sourced files (e.g. kmscube)
-  #(cat ${1} | sed 's/exit /noop /') | source /dev/stdin
+  PKG_NAME=$( strip_package_var $(grep -m 1 "PKG_NAME=" "${1}") )
+  PKG_VERSION=$( strip_package_var $(grep -m 1 "PKG_VERSION=" "${1}") )
+#  PKG_ID=$( strip_package_var $(grep -m 1 "PKG_ID=" "${1}") )
 
   if [ -f pkg_version/BAD_REGEX.${PKG_NAME} ]; then
     if [ "${1}" -nt pkg_version/BAD_REGEX.${PKG_NAME} ]; then
