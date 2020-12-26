@@ -1,16 +1,13 @@
 #!/bin/bash
 # SPDX-License-Identifier: GPL-2.0
-# Portions (comparedate) Copyright (C) 2013 https://gist.github.com/ashrithr/5614283
-# Copyright (C) 2020-present Team LibreELEC (https://libreelec.tv)
+# Copyright (C) 2019-present Team LibreELEC (https://libreelec.tv)
 
 set -e
 
 . config/options ""
 
-mkdir -p pkg_version
 if [ ! -d "pkg_version" ]; then
-  echo "no pkg_version directory and unable to create one."
-  exit 2
+  mkdir -p pkg_version 2>/dev/null || die "no pkg_version directory and unable to create one."
 fi
 
 # global vars
@@ -19,33 +16,15 @@ PACKAGES_UNKNOWN=""
 PACKAGES_BAD_REGEX=""
 PACKAGES_BAD_REGEX_SKIP=""
 
-PACKAGE_LIST=$(find packages/ -type f -name package.mk ! -path "packages/mediacenter/*" ! -path "packages/emulation/*" ! -path "packages/addons/addon-depends/adafruit-libraries-depends/*" ! -path "packages/lang/Python3/*" ! -path "packages/graphics/kmscube/*" | awk '{FS="/" ; $0=$0 ; print $(NF-1)"|"$0}' | sort | cut -d"|" -f2)
-
-# This checks that the specified file is less than 28 hours old.
-# returns 0 if younger than 28 hours.
-# returns 1 if older than 28 hours.
-#funtion arguments -> filename to comapre against curr time
-function comparedate() {
-  if [ ! -f "$1" ]; then
-    echo "file $1 does not exist"
-    exit 2
-  fi
-  MAXAGE=$(bc <<< '7*24*60*60') # seconds in 7 days
-  # file age in seconds = current_time - file_modification_time.
-  FILEAGE=$(($(date +%s) - $(stat -c '%Y' "$1")))
-  test $FILEAGE -lt $MAXAGE && {
-    #echo "$1 is less than 28 hours old."
+comparedate() {
+  # check if file is older than 1 week
+  [ ! -f "${1}" ] && die "${1} is not a file"
+  # Age of $1 in seconds is less than 1 week (in seconds) == true
+  if [ $(( $(date +%s) - $(date -r "${1}" +%s) )) -lt $(( 7*24*60*60 )) ]; then
     return 0
-  }
-  #echo "$1 is older than 7 days."
-  return 1
-
-  #sample usage of function test if file /tmp/test.sh is older than 7 days or not
-  #comparedate /tmp/test.sh
-}
-     
-noop() {
-  :
+  else
+    return 1
+  fi
 }
 
 strip_package_var() {
@@ -58,7 +37,7 @@ strip_package_var() {
 
 check_for_update() {
   # wipe key variables between uses
-  local PKG_NAME PKG_WATCH PKG_VERSION PKG_ID
+  local PKG_NAME PKG_VERSION PKG_ID
 
   PKG_NAME=$( strip_package_var $(grep -m 1 "PKG_NAME=" "${1}") )
   PKG_VERSION=$( strip_package_var $(grep -m 1 "PKG_VERSION=" "${1}") )
@@ -69,11 +48,8 @@ check_for_update() {
       # check the date on the BAD_REGEX.* and that the package.mk is not newer
       rm pkg_version/BAD_REGEX.${PKG_NAME}
     else
-      # check the date on the BAD_REGEX.* file and that it is current ( < 7 days old )
-      comparedate pkg_version/BAD_REGEX.${PKG_NAME}
-      if [ $? -eq 1 ]; then
-        rm pkg_version/BAD_REGEX.${PKG_NAME}
-      fi
+      # delete BAD_REGEX.* file if older than 7 days
+      comparedate pkg_version/BAD_REGEX.${PKG_NAME} || rm pkg_version/BAD_REGEX.${PKG_NAME}
     fi
   fi
 
@@ -87,11 +63,8 @@ check_for_update() {
   else
     pkg_version_file=0
     if [ -f pkg_version/${PKG_NAME} ]; then
-      # check the date on the pkg_version file is current ( < 7 days old )
-      comparedate pkg_version/${PKG_NAME}
-      if [ $? -eq 1 ]; then
-        rm pkg_version/${PKG_NAME}
-      fi
+      # delete pkg_version file if older than 7 days
+      comparedate pkg_version/${PKG_NAME} || rm pkg_version/${PKG_NAME}
     fi
 
     if [ -f pkg_version/${PKG_NAME} ]; then
@@ -118,6 +91,16 @@ check_for_update() {
     fi
   fi
 }
+
+
+PACKAGE_LIST=$(find packages/ -type f -name package.mk \
+    ! -path "packages/mediacenter/*" \
+    ! -path "packages/emulation/*" \
+    ! -path "packages/addons/addon-depends/adafruit-libraries-depends/*" \
+    ! -path "packages/lang/Python3/*" \
+    ! -path "packages/graphics/kmscube/*" \
+    | awk '{FS="/" ; $0=$0 ; print $(NF-1)"|"$0}' | sort | cut -d"|" -f2 \
+    )
 
 echo -e "\nUpdates found:\n"
 printf "%-30s | %-40s | %-20s" "Package" "master" "upstream"; printf '\n'
