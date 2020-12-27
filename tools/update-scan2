@@ -2,19 +2,14 @@
 
 set -e
 
-. config/options ""
-
 # global vars
 PACKAGES_CURRENT=""
+PACKAGES_IGNORED=""
 PACKAGES_UNKNOWN=""
-PACKAGES_BAD_REGEX=""
-
-PACKAGE_LIST="$(find packages/ -type f -name package.mk ! -path "packages/mediacenter/*" ! -path "packages/emulation/*" ! -path "packages/addons/addon-depends/adafruit-libraries-depends/*" | awk '{FS="/" ; $0=$0 ; print $(NF-1)"|"$0}' | sort | cut -d"|" -f2)"
 
 check_for_update() {
-  local PKG_NAME PKG_WATCH PKG_VERSION
+  local PKG_ID PKG_NAME PKG_URL PKG_VERSION
 
-  unset PKG_NAME PKG_VERSION PKG_ID
   PKG_ID="$(grep -oP -m 1 '(?<=PKG_ID=\").*(?=\")' ${1} || true)"
   PKG_URL="$(grep -oP -m 1 '(?<=PKG_URL=\").*(?=\")' ${1} || true)"
   PKG_NAME="$(grep -oP -m 1 '(?<=PKG_NAME=\").*(?=\")' ${1} || true)"
@@ -44,6 +39,13 @@ check_for_update() {
     PACKAGES_CURRENT+=" ${PKG_NAME}"
   fi
 }
+
+PACKAGE_LIST="$(find packages/ -type f -name package.mk \
+  ! -path "packages/mediacenter/*" \
+  ! -path "packages/emulation/*" \
+  ! -path "packages/addons/addon-depends/adafruit-libraries-depends/*" \
+  | awk '{FS="/" ; $0=$0 ; print $(NF-1)"|"$0}' | sort | cut -d"|" -f2 \
+  )"
 
 echo -e "\nUpdates found:\n"
 printf "%-35s | %-40s | %-20s" "Package" "master" "upstream"; printf '\n'
