@@ -1,0 +1,67 @@
+#!/bin/bash
+
+set -e
+
+. config/options ""
+
+# global vars
+PACKAGES_CURRENT=""
+PACKAGES_UNKNOWN=""
+PACKAGES_BAD_REGEX=""
+
+PACKAGE_LIST="$(find packages/ -type f -name package.mk ! -path "packages/mediacenter/*" ! -path "packages/emulation/*" ! -path "packages/addons/addon-depends/adafruit-libraries-depends/*" | awk '{FS="/" ; $0=$0 ; print $(NF-1)"|"$0}' | sort | cut -d"|" -f2)"
+
+check_for_update() {
+  local PKG_NAME PKG_WATCH PKG_VERSION
+
+  unset PKG_NAME PKG_VERSION PKG_ID
+  PKG_ID="$(grep -oP -m 1 '(?<=PKG_ID=\").*(?=\")' ${1} || true)"
+  PKG_URL="$(grep -oP -m 1 '(?<=PKG_URL=\").*(?=\")' ${1} || true)"
+  PKG_NAME="$(grep -oP -m 1 '(?<=PKG_NAME=\").*(?=\")' ${1} || true)"
+  PKG_VERSION="$(grep -oP -m 1 '(?<=PKG_VERSION=\").*(?=\")' ${1} || true)"
+
+  if [ -z "${PKG_VERSION}" ]; then
+    PACKAGES_IGNORED+=" ${PKG_NAME}"
+    return
+  else
+    if [ -z "${PKG_ID}" ]; then
+      PACKAGES_NO_ID+=" ${PKG_NAME}"
+      return
+    else
+      upstream_version="$(curl -sL https://release-monitoring.org/api/project/${PKG_ID} | jq -r '.version')"
+      if [ "${upstream_version}" == "null" ]; then
+        upstream_version="! broken at release tracker !"
+      elif [ -z "${upstream_version}" ]; then
+        upstream_version="$(curl -sL https://release-monitoring.org/api/project/${PKG_ID} | jq -r '.version')"
+        echo XXXXXXXXXXXXXXXXXXXXXXXXXx
+      fi
+    fi
+  fi
+
+  if [ "${PKG_VERSION}" != "${upstream_version}" ]; then
+    printf "%-35s | %-40s | %-20s" "${PKG_NAME}" "${PKG_VERSION}" "${upstream_version}"; printf '\n'
+  else
+    PACKAGES_CURRENT+=" ${PKG_NAME}"
+  fi
+}
+
+echo -e "\nUpdates found:\n"
+printf "%-35s | %-40s | %-20s" "Package" "master" "upstream"; printf '\n'
+echo "------------------------------------------------------------------------------------------------"
+
+for check_version in ${PACKAGE_LIST}; do
+  check_for_update "${check_version}"
+done
+
+echo ""
+
+if [ -n "${PACKAGES_CURRENT}" ]; then
+  echo -e "\nCurrent $(echo ${PACKAGES_CURRENT} | wc -w):\n${PACKAGES_CURRENT}\n"
+fi
+if [ -n "${PACKAGES_NO_ID}" ]; then
+  echo -e "\nNo ID $(echo ${PACKAGES_NO_ID} | wc -w):\n${PACKAGES_NO_ID}"
+fi
+if [ -n "${PACKAGES_IGNORED}" ]; then
+  echo -e "\nIgnored $(echo ${PACKAGES_IGNORED} | wc -w):\n${PACKAGES_IGNORED}"
+fi
+
