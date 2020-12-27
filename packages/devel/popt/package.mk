@@ -8,6 +8,7 @@ PKG_SHA256="e728ed296fe9f069a0e005003c3d6b2dde3d9cad453422a10d6558616d304cc8"
 PKG_LICENSE="GPL"
 PKG_SITE="http://rpm5.org/files/popt/"
 PKG_URL="http://rpm5.org/files/popt/$PKG_NAME-$PKG_VERSION.tar.gz"
+PKG_ID="3689"
 PKG_DEPENDS_TARGET="toolchain"
 PKG_LONGDESC="The popt library exists essentially for parsing command-line options."
 

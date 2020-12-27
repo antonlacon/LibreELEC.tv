@@ -8,6 +8,7 @@ PKG_SHA256="ecb9d0908ca41d5ca5fef974323b3bba6bec19eebba0b44f396de98cfcc089f1"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.gnu.org/s/gettext/"
 PKG_URL="http://ftp.gnu.org/pub/gnu/gettext/$PKG_NAME-$PKG_VERSION.tar.gz"
+PKG_ID="898"
 PKG_DEPENDS_HOST="ccache:host"
 PKG_LONGDESC="A program internationalization library and tools."
 

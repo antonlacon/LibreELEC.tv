@@ -7,6 +7,7 @@ PKG_SHA256="8425399277d9d5e39454e655cfd3eb004607960c8358a3e732f5e741a6b5df0a"
 PKG_LICENSE="zlib"
 PKG_SITE="https://github.com/nmoinvaz/minizip"
 PKG_URL="https://github.com/nmoinvaz/minizip/archive/$PKG_VERSION.tar.gz"
+PKG_ID="17546"
 PKG_DEPENDS_TARGET="zlib"
 PKG_LONGDESC="Minizip zlib contribution fork with latest bug fixes"
 

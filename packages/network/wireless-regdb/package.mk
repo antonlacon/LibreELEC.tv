@@ -8,6 +8,7 @@ PKG_SHA256="89fd031aed5977c219a71501e144375a10e7c90d1005d5d086ea7972886a2c7a"
 PKG_LICENSE="GPL"
 PKG_SITE="http://wireless.kernel.org/en/developers/Regulatory"
 PKG_URL="https://www.kernel.org/pub/software/network/$PKG_NAME/$PKG_NAME-$PKG_VERSION.tar.xz"
+PKG_ID="15257"
 PKG_LONGDESC="wireless-regdb is a regulatory database"
 PKG_TOOLCHAIN="manual"
 

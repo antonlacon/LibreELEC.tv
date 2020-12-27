@@ -7,6 +7,7 @@ PKG_SHA256="cac9000fb82296d3c1e590c373fc8d4067620c003c707027410711081f8b7e26"
 PKG_LICENSE="BSD"
 PKG_SITE="https://www.webmproject.org"
 PKG_URL="http://repo.or.cz/aom.git/snapshot/${PKG_VERSION}.tar.gz"
+PKG_ID="17628"
 PKG_DEPENDS_TARGET="toolchain"
 PKG_LONGDESC="AV1 Codec Library"
 
