@@ -4,19 +4,20 @@
 
 set -e
 
-. config/options ""
-
-if [ ! -d "pkg_version" ]; then
-  mkdir -p pkg_version 2>/dev/null || die "no pkg_version directory and unable to create one."
-fi
-
 # global vars
 PACKAGES_CURRENT=""
 PACKAGES_UNKNOWN=""
 PACKAGES_BAD_REGEX=""
 PACKAGES_BAD_REGEX_SKIP=""
 
-comparedate() {
+die() {
+  if [ -n "$1" ]; then
+    echo -e "$1" >&2
+  fi
+  exit "${2:-1}"
+}
+
+compare_date() {
   # check if file is older than 1 week
   [ ! -f "${1}" ] && die "${1} is not a file"
   # Age of $1 in seconds is less than 1 week (in seconds) == true
@@ -49,7 +50,7 @@ check_for_update() {
       rm pkg_version/BAD_REGEX.${PKG_NAME}
     else
       # delete BAD_REGEX.* file if older than 7 days
-      comparedate pkg_version/BAD_REGEX.${PKG_NAME} || rm pkg_version/BAD_REGEX.${PKG_NAME}
+      compare_date pkg_version/BAD_REGEX.${PKG_NAME} || rm pkg_version/BAD_REGEX.${PKG_NAME}
     fi
   fi
 
@@ -64,7 +65,7 @@ check_for_update() {
     pkg_version_file=0
     if [ -f pkg_version/${PKG_NAME} ]; then
       # delete pkg_version file if older than 7 days
-      comparedate pkg_version/${PKG_NAME} || rm pkg_version/${PKG_NAME}
+      compare_date pkg_version/${PKG_NAME} || rm pkg_version/${PKG_NAME}
     fi
 
     if [ -f pkg_version/${PKG_NAME} ]; then
@@ -93,12 +94,15 @@ check_for_update() {
 }
 
 
+if [ ! -d "pkg_version" ]; then
+  mkdir -p pkg_version 2>/dev/null || die "no pkg_version directory and unable to create one."
+fi
+
 PACKAGE_LIST=$(find packages/ -type f -name package.mk \
     ! -path "packages/mediacenter/*" \
     ! -path "packages/emulation/*" \
     ! -path "packages/addons/addon-depends/adafruit-libraries-depends/*" \
     ! -path "packages/lang/Python3/*" \
-    ! -path "packages/graphics/kmscube/*" \
     | awk '{FS="/" ; $0=$0 ; print $(NF-1)"|"$0}' | sort | cut -d"|" -f2 \
     )
 
@@ -121,12 +125,6 @@ if [ -n "${PACKAGES_BAD_REGEX}" ]; then
 fi
 if [ -n "${PACKAGES_CURRENT}" ]; then
   echo -e "\nCurrent $(echo ${PACKAGES_CURRENT} | wc -w):\n${PACKAGES_CURRENT}\n"
-fi
-if [ -n "${PACKAGES_GITHASH}" ]; then
-  echo -e "\nPackages using githash $(echo ${PACKAGES_GITHASH} | wc -w):\n${PACKAGES_GITHASH}"
-fi
-if [ -n "${PACKAGES_NOURL}" ]; then
-  echo -e "\nNo PKG_URL $(echo ${PACKAGES_NOURL} | wc -w):\n${PACKAGES_NOURL}"
 fi
 if [ -n "${PACKAGES_UNKNOWN}" ]; then
   echo -e "\nUnknown $(echo ${PACKAGES_UNKNOWN} | wc -w):\n${PACKAGES_UNKNOWN}"
