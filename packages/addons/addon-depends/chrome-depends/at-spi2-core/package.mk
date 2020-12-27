@@ -8,6 +8,7 @@ PKG_SHA256="88da57de0a7e3c60bc341a974a80fdba091612db3547c410d6deab039ca5c05a"
 PKG_LICENSE="OSS"
 PKG_SITE="http://www.gnome.org/"
 PKG_URL="https://ftp.gnome.org/pub/gnome/sources/at-spi2-core/${PKG_VERSION:0:4}/at-spi2-core-$PKG_VERSION.tar.xz"
+PKG_ID="7841"
 PKG_DEPENDS_TARGET="toolchain atk dbus glib libXtst"
 PKG_LONGDESC="Protocol definitions and daemon for D-Bus at-spi."
 

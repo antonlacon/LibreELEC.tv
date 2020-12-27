@@ -9,6 +9,7 @@ PKG_LICENSE="MIT"
 PKG_SITE="http://xkbcommon.org"
 PKG_URL="http://xkbcommon.org/download/${PKG_NAME}-${PKG_VERSION}.tar.xz"
 PKG_DEPENDS_TARGET="toolchain xkeyboard-config libxml2"
+PKG_ID="1780"
 PKG_LONGDESC="xkbcommon is a library to handle keyboard descriptions."
 
 PKG_MESON_OPTS_TARGET="-Denable-docs=false"

@@ -6,6 +6,7 @@ PKG_VERSION="0.91"
 PKG_SHA256="03e9328e4857c2c9dcc1b0347724ae4cd741a72ee11acc991784e8ef45b7f1ab"
 PKG_SITE="http://www.i-scream.org/libstatgrab/"
 PKG_URL="http://ftp.i-scream.org/pub/i-scream/libstatgrab/libstatgrab-$PKG_VERSION.tar.gz"
+PKG_ID="1731"
 PKG_DEPENDS_TARGET="toolchain"
 PKG_SECTION=libs
 PKG_LONGDESC="A library that provides cross platform access to statistics about the system on which it's run."
