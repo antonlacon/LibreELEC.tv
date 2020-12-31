@@ -28,7 +28,9 @@ post_makeinstall_target() {
       -i $INSTALL/usr/lib/libreelec/backup-restore
 
   ADDON_INSTALL_DIR=${INSTALL}/usr/share/kodi/addons/service.libreelec.settings
-  python_compile ${ADDON_INSTALL_DIR}
+  for file in $(find ${ADDON_INSTALL_DIR} -type f -name "*.py" ! -name "default.py" ! -name "service.py"); do
+    python_compile ${file}
+  done
 }
 
 post_install() {
