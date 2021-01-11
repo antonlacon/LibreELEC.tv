@@ -22,8 +22,7 @@ fi
 
 if [ ! -f "${FULL_SOURCE_PATH}" -a ! -d "${FULL_SOURCE_PATH}" ]; then
   echo "error: File ${PKG_SOURCE_NAME} doesn't exist for package ${1}"
-  echo "Have you called scripts/extract before scripts/get ?"
-  die
+  die "Have you called scripts/extract before scripts/get?"
 fi
 
 # The build system expects packages to be extracted to
@@ -44,35 +43,35 @@ else
   DESTDIR="${2}"
 fi
 
-case ${PKG_SOURCE_NAME} in
+case "${PKG_SOURCE_NAME}" in
   *.tar | *.tar.bz2 | *.tbz | *.tar.gz | *.tgz | *.tar.xz | *.txz)
     mkdir -p "${DESTDIR}"
-    tar xf ${FULL_SOURCE_PATH} ${TAR_OPTS} -C "${DESTDIR}"
+    tar xf "${FULL_SOURCE_PATH}" "${TAR_OPTS}" -C "${DESTDIR}"
     ;;
   *.tar.zst | *.tzst)
     mkdir -p "${DESTDIR}"
-    zstdcat ${FULL_SOURCE_PATH} | tar xf - ${TAR_OPTS} -C "${DESTDIR}"
+    zstdcat -q "${FULL_SOURCE_PATH}" | tar xf - "${TAR_OPTS}" -C "${DESTDIR}"
     ;;
   *.7z)
-    mkdir -p ${2}/${1}
-    7z x -o${2}/${1} ${FULL_SOURCE_PATH}
+    mkdir -p "${DESTDIR}/${1}"
+    7z x -o"${DESTDIR}/${1}" "${FULL_SOURCE_PATH}"
     ;;
   *.zip)
-    unzip -q ${FULL_SOURCE_PATH} -d ${2}
+    unzip -q "${FULL_SOURCE_PATH}" -d "${DESTDIR}"
     ;;
   *.diff | *.patch)
-    cat ${FULL_SOURCE_PATH} | patch -d ${2} -p1
+    patch -d "${DESTDIR}" -p1 < "${FULL_SOURCE_PATH}"
     ;;
   *.diff.bz2 | *.patch.bz2 | patch-*.bz2)
-    bzcat ${FULL_SOURCE_PATH} | patch -d ${2} -p1
+    bzcat "${FULL_SOURCE_PATH}" | patch -d "${DESTDIR}" -p1
     ;;
   *.diff.gz | *.patch.gz | patch-*.gz)
-    zcat ${FULL_SOURCE_PATH} | patch -d ${2} -p1
+    zcat "${FULL_SOURCE_PATH}" | patch -d "${DESTDIR}" -p1
     ;;
   *)
-    FULL_DEST_PATH="${2}/${PKG_NAME}-${PKG_VERSION}"
-    mkdir ${FULL_DEST_PATH}
-    tar cf - -C ${FULL_SOURCE_PATH} ${PKG_TAR_COPY_OPTS} . | \
-      tar xf - -C ${FULL_DEST_PATH}
+    FULL_DEST_PATH="${DESTDIR}/${PKG_NAME}-${PKG_VERSION}"
+    mkdir "${FULL_DEST_PATH}"
+    tar cf - -C "${FULL_SOURCE_PATH}" "${PKG_TAR_COPY_OPTS}" . | \
+      tar xf - -C "${FULL_DEST_PATH}"
     ;;
 esac
