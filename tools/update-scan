@@ -17,6 +17,15 @@ PACKAGES_IGNORED=""
 PACKAGES_NOT_REGISTERED=""
 github_api_token=""
 github_api="no"
+ERR_TMPFILE=$(mktemp)
+
+show_error() {
+  if [ -s "${ERR_TMPFILE}" ]; then
+    cat "${ERR_TMPFILE}"
+  else
+    echo "show_error: no log found"
+  fi
+}
 
 test_github_api() {
 # check for github user and token present at ~/.libreelec/options to activate github api checks
@@ -58,7 +67,7 @@ check_for_update() {
   fi
 
   # check if package exists at tracker
-  RMO_API_RESPONSE=$(curl -sL "https://release-monitoring.org/api/project/LibreELEC/${PKG_NAME}")
+  RMO_API_RESPONSE=$(curl -sL "https://release-monitoring.org/api/project/LibreELEC/${PKG_NAME}" | tee "${ERR_TMPFILE}" || show_error)
   upstream_version=$(echo "${RMO_API_RESPONSE}" | jq -r '.version')
 
   # look for alternative versions if necessary
@@ -149,3 +158,6 @@ fi
 if [ -n "${PACKAGES_NOT_REGISTERED}" ]; then
   echo -e "\nPackages not known at tracker $(echo ${PACKAGES_NOT_REGISTERED} | wc -w):\n${PACKAGES_NOT_REGISTERED}\n"
 fi
+
+# cleanup
+rm "${ERR_TMPFILE}"
