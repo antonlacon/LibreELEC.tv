@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # SPDX-License-Identifier: GPL-2.0-or-later
-# Copyright (C) 2018 Ian Leonard (antonlacon@gmail.com)
+# Copyright (C) 2018-2020 Ian Leonard (antonlacon@gmail.com)
 #
 # Scan through the given directory looking for out of date source packages.
 # If a source tarball is found that is different from what is currently in
@@ -82,8 +82,10 @@ for SOURCE_PACKAGE in $(find "${SOURCES}/" -mindepth 1 -type d); do
   PACKAGE_NAME=$(basename "${SOURCE_PACKAGE}")
 
   # check if package is still in the tree to selectively prune, or delete the dir
-  PACKAGE_DIR=$(get_pkg_directory "${PACKAGE_NAME}")
-  PACKAGE_SOURCE_FILE=$(get_pkg_variable "${PACKAGE_NAME}" "PKG_SOURCE_NAME")
+  PACKAGE_DIR=$(get_pkg_directory "${PACKAGE_NAME}" || true)
+  if [ -n "${PACKAGE_DIR}" ]; then
+    PACKAGE_SOURCE_FILE=$(get_pkg_variable "${PACKAGE_NAME}" "PKG_SOURCE_NAME")
+  fi
   # PACKAGE_DIR is null if not in tree, PACKAGE_SOURCE_FILE is null if PKG_ARCH mismatch
   if [ -n "${PACKAGE_DIR}" -a -n "${PACKAGE_SOURCE_FILE}" ]; then
     CUR_PACKAGE_FILE=$(basename "${PACKAGE_SOURCE_FILE}")
@@ -110,7 +112,7 @@ for SOURCE_PACKAGE in $(find "${SOURCES}/" -mindepth 1 -type d); do
       fi
     done
   else
-    echo "${PACKAGE_NAME} no longer in tree"
+    echo "info: ${PACKAGE_NAME} no longer in tree"
     if [ "${DESTRUCTIVE_RUN}" = "true" ]; then
       rm -r "${SOURCE_PACKAGE}"
     fi
