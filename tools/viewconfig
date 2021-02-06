@@ -1,0 +1,6 @@
+#!/bin/bash
+
+. config/options ""
+. config/show_config
+
+show_config
