@@ -77,9 +77,9 @@ echo "image: creating part2..."
 STORAGE_PART_START=$(( ${SYSTEM_PART_END} + 1 ))
 STORAGE_PART_END=$(( ${STORAGE_PART_START} + (${STORAGE_SIZE} * 1024 * 1024 / 512) - 1 ))
 if [ "${DISK_LABEL}" = "gpt" ]; then
-  parted -s "${DISK}" -a min unit s mkpart storage ext4 ${STORAGE_PART_START} ${STORAGE_PART_END}
+  parted -s "${DISK}" -a min unit s mkpart storage ${STORAGE_FILESYSTEM} ${STORAGE_PART_START} ${STORAGE_PART_END}
 else
-  parted -s "${DISK}" -a min unit s mkpart primary ext4 ${STORAGE_PART_START} ${STORAGE_PART_END}
+  parted -s "${DISK}" -a min unit s mkpart primary ${STORAGE_FILESYSTEM} ${STORAGE_PART_START} ${STORAGE_PART_END}
 fi
 sync
 
@@ -257,18 +257,20 @@ fi # bootloader
 echo "image: extracting part2 from image..."
 STORAGE_PART_COUNT=$(( ${STORAGE_PART_END} - ${STORAGE_PART_START} + 1 ))
 sync
-dd if="${DISK}" of="${LE_TMP}/part2.ext4" bs=512 skip="${STORAGE_PART_START}" count="${STORAGE_PART_COUNT}" conv=fsync >"${SAVE_ERROR}" 2>&1 || show_error
+dd if="${DISK}" of="${LE_TMP}/part2.fs" bs=512 skip="${STORAGE_PART_START}" count="${STORAGE_PART_COUNT}" conv=fsync >"${SAVE_ERROR}" 2>&1 || show_error
 
 # create filesystem on part2
 echo "image: creating filesystem on part2..."
-mke2fs -F -q -t ext4 -m 0 "${LE_TMP}/part2.ext4"
-tune2fs -L "${DISTRO_DISKLABEL}" -U ${UUID_STORAGE} "${LE_TMP}/part2.ext4" >"${SAVE_ERROR}" 2>&1 || show_error
-e2fsck -n "${LE_TMP}/part2.ext4" >"${SAVE_ERROR}" 2>&1 || show_error
-sync
+if [ "${STORAGE_FILESYSTEM}" = "ext4" ]; then
+  mke2fs -F -q -t ext4 -m 0 "${LE_TMP}/part2.fs"
+  tune2fs -L "${DISTRO_DISKLABEL}" -U ${UUID_STORAGE} "${LE_TMP}/part2.fs" >"${SAVE_ERROR}" 2>&1 || show_error
+  e2fsck -n "${LE_TMP}/part2.fs" >"${SAVE_ERROR}" 2>&1 || show_error
+  sync
+fi
 
 # merge part2 back to disk image
 echo "image: merging part2 back to image..."
-dd if="${LE_TMP}/part2.ext4" of="${DISK}" bs=512 seek="${STORAGE_PART_START}" conv=fsync,notrunc >"${SAVE_ERROR}" 2>&1 || show_error
+dd if="${LE_TMP}/part2.fs" of="${DISK}" bs=512 seek="${STORAGE_PART_START}" conv=fsync,notrunc >"${SAVE_ERROR}" 2>&1 || show_error
 
 # extract part1 from image to run fsck
 echo "image: extracting part1 from image..."
