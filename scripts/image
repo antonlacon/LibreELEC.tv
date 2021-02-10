@@ -397,6 +397,7 @@ if [ "${1}" = "release" -o "${1}" = "mkimage" -o "${1}" = "noobs" ]; then
     sed -e "s%@DISTRONAME@%${DISTRONAME}%g" \
         -e "s%@PROJECT@%${DEVICE:-${PROJECT}}%g" \
         -e "s%@SYSTEM_SIZE@%${SYSTEM_SIZE}%g" \
+        -e "s%@STORAGE_FILESYSTEM@%${STORAGE_FILESYSTEM}%g" \
         -i ${RELEASE_DIR}/${NOOBS_DISTRO}/partitions.json
 
     # Create System dir
