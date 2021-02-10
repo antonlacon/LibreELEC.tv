@@ -617,8 +617,9 @@ mount_storage() {
           STORAGE_TARGET="$disk"
           ;;
         esac
-        STORAGE_SIZE=$(blockdev --getsize64 "$STORAGE_TARGET") # Disk size in bytes
-        if [ $STORAGE_SIZE -eq 33554432 ]; then # 32 * 1024 * 1024
+        # Partition size in bytes
+        STORAGE_SIZE=$(blockdev --getsize64 "$STORAGE_TARGET")
+        if [ $STORAGE_SIZE -eq @STORAGE_TARGET_SIZE@ ]; then
           echo "" > /storage/.please_resize_me
         fi
       fi

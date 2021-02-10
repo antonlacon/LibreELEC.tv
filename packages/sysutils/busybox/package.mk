@@ -229,10 +229,15 @@ makeinstall_init() {
     chmod 755 ${INSTALL}/platform_init
   fi
 
+  local STORAGE_TARGET_SIZE
+  # Storage size in MiB to bytes
+  STORAGE_TARGET_SIZE=$((${STORAGE_SIZE}*1024**2))
+
   cp ${PKG_DIR}/scripts/functions ${INSTALL}
   cp ${PKG_DIR}/scripts/init ${INSTALL}
   sed -e "s/@DISTRONAME@/${DISTRONAME}/g" \
       -e "s/@KERNEL_NAME@/${KERNEL_NAME}/g" \
+      -e "s/@STORAGE_TARGET_SIZE@/${STORAGE_TARGET_SIZE}/" \
       -i ${INSTALL}/init
   chmod 755 ${INSTALL}/init
 }
