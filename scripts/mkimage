@@ -266,6 +266,10 @@ if [ "${STORAGE_FILESYSTEM}" = "ext4" ]; then
   tune2fs -L "${DISTRO_DISKLABEL}" -U ${UUID_STORAGE} "${LE_TMP}/part2.fs" >"${SAVE_ERROR}" 2>&1 || show_error
   e2fsck -n "${LE_TMP}/part2.fs" >"${SAVE_ERROR}" 2>&1 || show_error
   sync
+elif [ "${STORAGE_FILESYSTEM}" = "btrfs" ]; then
+  mkfs.btrfs -q -L "${DISTRO_DISKLABEL}" -U ${UUID_STORAGE} "${LE_TMP}/part2.fs" >"${SAVE_ERROR}" 2>&1 || show_error
+  btrfs check "${LE_TMP}/part2.fs" >"${SAVE_ERROR}" 2>&1 || show_error
+  sync
 fi
 
 # merge part2 back to disk image
