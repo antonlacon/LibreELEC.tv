@@ -606,7 +606,11 @@ mount_storage() {
     if [ -f /flash/mount-storage.sh ]; then
       . /flash/mount-storage.sh
     else
-      mount_part "$disk" "/storage" "rw,noatime"
+      if [ $(blkid -o value -s TYPE "$disk") = "btrfs" ]; then
+        mount_part "$disk" "/storage" "rw,noatime,compress=zstd:3,commit=0,ssd_spread,autodefrag"
+      else
+        mount_part "$disk" "/storage" "rw,noatime"
+      fi
       # create resize marker if storage is original 32 MiB size
       if [ "$STORAGE_NETBOOT" != "yes" ]; then
         case "$disk" in
