@@ -24,21 +24,12 @@ for PROGRAM in ${PROGRAMS}; do
   fi
 done
 
-# fake project name
-PROJECT="aarch64-toolchain"
-ARCH="aarch64"
+# build details
+export PROJECT="ARM"
+export DEVICE="ARMv8"
+export ARCH="aarch64"
 
-# aarch64 build options
-TARGET_CPU="cortex-a53"
-TARGET_CPU_FLAGS="+crc+crypto"
-TARGET_FEATURES="64bit"
-TARGET_KERNEL_ARCH="arm64"
-
-# create fake project
-mkdir -p projects/${PROJECT}/linux
-touch projects/${PROJECT}/linux/linux.aarch64.conf
-
-# we want to trap our own exit signals so we can cleanup temp dirs
+# trap our exit signals to cleanup temp dirs
 NOONEXIT="yes"
 DISABLE_HOST_OPTIMIZATION="yes"
 . config/options ""
@@ -53,7 +44,6 @@ TOOLCHAIN_VERSION_FILE="${TOOLCHAIN_STAGING_DIRECTORY}/${TOOLCHAIN_NAME}/toolcha
 TOOLCHAIN_ARCHIVE="${TOOLCHAIN_NAME}-${TOOLCHAIN_VERSION}.tar.xz"
 
 cleanup() {
-  rm -rf projects/${PROJECT}
   rm -rf ${TOOLCHAIN_STAGING_DIRECTORY}
 }
 trap "cleanup $0 $@" EXIT
