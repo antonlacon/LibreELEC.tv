@@ -54,10 +54,11 @@ if [ -f "${TOOLCHAIN_ARCHIVE}" ]; then
 fi
 
 # start the multithreaded build of the toolchain
-${SCRIPTS}/build_mt toolchain
+#${SCRIPTS}/build_mt toolchain
+${SCRIPTS}/build_mt gcc:host
 
 echo -e "\n==========================================================="
-echo -e "Toolchain was built successfully"
+echo -e "GCC cross-compiler built successfully"
 
 # copy toolchain to staging
 cp -a ${TOOLCHAIN} ${TOOLCHAIN_STAGING_DIRECTORY}/${TOOLCHAIN_NAME}
