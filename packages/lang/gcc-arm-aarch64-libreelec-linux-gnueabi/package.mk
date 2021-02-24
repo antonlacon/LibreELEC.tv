@@ -3,7 +3,7 @@
 
 PKG_NAME="gcc-arm-aarch64-libreelec-linux-gnueabi"
 PKG_VERSION="10.2.0-0"
-PKG_SHA256="28520f3580b94ebd34a2ca2ca13c7db547862034ad8cfd4cb0e193e6aa9280ac"
+PKG_SHA256="f69efc15b3d5652a987efa6cd65a225f3f3b73d828b1d00dd308ab6b0c1860e1"
 PKG_LICENSE="GPL"
 PKG_SITE="https://github.com/LibreELEC/LibreELEC.git"
 PKG_URL="${DISTRO_SRC}/${PKG_NAME}-${PKG_VERSION}.tar.xz"
