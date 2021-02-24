@@ -17,7 +17,7 @@ fi
 # check for needed tools
 PROGRAMS="jq pv tar xz sort uniq mktemp cat cp sed awk"
 for PROGRAM in ${PROGRAMS}; do
-  if [ -z "$(which ${PROGRAM} 2> /dev/null)" ]; then
+  if [ -z "$(command -v ${PROGRAM} 2> /dev/null)" ]; then
     echo -e "Missing needed program: ${PROGRAM}"
     echo -e "Required programs: ${PROGRAMS}"
     exit 0
@@ -36,7 +36,7 @@ DISABLE_HOST_OPTIMIZATION="yes"
 
 # set toolchain name and version
 TOOLCHAIN_STAGING_DIRECTORY="$(mktemp -d)"
-GCC_VERSION="$(get_pkg_variable gcc PKG_VERSION)"
+GCC_VERSION="$(get_pkg_version gcc)"
 TOOLCHAIN_NAME="gcc-arm-${TARGET_NAME}"
 TOOLCHAIN_VERSION_REV="${1:-0}"
 TOOLCHAIN_VERSION="${GCC_VERSION}-${TOOLCHAIN_VERSION_REV}"
@@ -86,7 +86,7 @@ TOOLCHAIN_PACKAGES="$(cat ${TOOLCHAIN_PLAN} | jq '.[] | select(.section != "virt
 
 for package in ${TOOLCHAIN_PACKAGES}; do
   echo -e "${package}" >> ${TOOLCHAIN_VERSION_FILE}
-  echo -e " - version: $(get_pkg_variable ${package} PKG_VERSION)" >> ${TOOLCHAIN_VERSION_FILE}
+  echo -e " - version: $(get_pkg_version ${package})" >> ${TOOLCHAIN_VERSION_FILE}
   echo -e " - sha256: $(get_pkg_variable ${package} PKG_SHA256)" >> ${TOOLCHAIN_VERSION_FILE}
   echo -e " - url: $(get_pkg_variable ${package} PKG_URL)\n" >> ${TOOLCHAIN_VERSION_FILE}
 done
