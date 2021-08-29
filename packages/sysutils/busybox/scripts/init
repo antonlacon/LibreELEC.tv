@@ -43,6 +43,8 @@ GRUB_DEFAULT=""
 FLASH_NETBOOT="no"
 STORAGE_NETBOOT="no"
 STORAGE_SIZE="0"
+STORAGE_PARENT=""
+UNALLOCATED_SIZE="0"
 
 NBD_DEVS="0"
 FLASH_FREE_MIN="5"
@@ -540,8 +542,23 @@ mount_storage() {
         esac
         # Partition size in bytes
         STORAGE_SIZE=$(blockdev --getsize64 "$STORAGE_TARGET")
+
+        # If storage is still original size...
         if [ $STORAGE_SIZE -eq @STORAGE_TARGET_SIZE@ ]; then
-          echo "" > /storage/.please_resize_me
+          # Get parent device node of STORAGE_TARGET
+          TEMP_PARENT="$STORAGE_TARGET"
+          while [ "${#TEMP_PARENT}" -gt 5 ]; do
+            TEMP_PARENT="${TEMP_PARENT%?}"
+            if [ -b "$TEMP_PARENT" ]; then
+              STORAGE_PARENT="$TEMP_PARENT"
+            fi
+          done
+          # Unallocated drive space in bytes
+          UNALLOCATED_SIZE=$(/usr/sbin/parted "$STORAGE_PARENT" unit B print free | grep 'Free Space' | tail -n 1 | awk '{sub(/B$/,"",$3); print $3}')
+          # ... and >=128MB of free drive space? place resize marker
+          if [ $UNALLOCATED_SIZE -ge 134217728 ]; then
+            echo "" > /storage/.please_resize_me
+          fi
         fi
       fi
     fi
