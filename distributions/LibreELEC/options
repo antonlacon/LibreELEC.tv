@@ -79,6 +79,7 @@
   SYSTEM_PART_START=8192
 
 # Size of storage partition, in MB. Must be >=32
+# Do not set SYSTEM_SIZE + STORAGE_SIZE to equal common sizes of memory devices
   STORAGE_SIZE=32
 
 # build with swap support (yes / no)
