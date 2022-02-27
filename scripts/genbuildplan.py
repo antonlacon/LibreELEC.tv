@@ -351,10 +351,16 @@ parser.add_argument("--warn-invalid", action="store_true", default=False, \
 parser.add_argument("--ignore-invalid", action="store_true", default=False, \
                     help="Ignore invalid packages.")
 
-group =  parser.add_mutually_exclusive_group()
-group.add_argument("--show-wants", action="store_true", \
+header_group = parser.add_mutually_exclusive_group()
+header_group.add_argument("--show-header", action="store_true", default=True, \
+                    help="Show stats header on output. This is the default.")
+header_group.add_argument("--hide-header", action="store_false", dest="show_header", \
+                    help="Hide stats header on output")
+
+wants_group = parser.add_mutually_exclusive_group()
+wants_group.add_argument("--show-wants", action="store_true", \
                     help="Output \"wants\" dependencies for each step.")
-group.add_argument("--hide-wants", action="store_false", dest="show_wants", default=True, \
+wants_group.add_argument("--hide-wants", action="store_false", dest="show_wants", default=True, \
                     help="Disable --show-wants.  This is the default.")
 
 parser.add_argument("--with-json", metavar="FILE", \
@@ -371,10 +377,11 @@ REQUIRED_PKGS = processPackages(args, ALL_PACKAGES)
 # Identify list of packages to build/install
 steps = [step for step in get_build_steps(args, REQUIRED_PKGS)]
 
-eprint(f"Packages loaded : {loaded}")
-eprint(f"Build trigger(s): {len(args.build)} [{' '.join(args.build)}]")
-eprint(f"Package steps   : {len(steps)}")
-eprint("")
+if args.show_header:
+    eprint(f"Packages loaded : {loaded}")
+    eprint(f"Build trigger(s): {len(args.build)} [{' '.join(args.build)}]")
+    eprint(f"Package steps   : {len(steps)}")
+    eprint("")
 
 # Write the JSON build plan (with dependencies)
 if args.with_json:
