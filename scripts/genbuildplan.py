@@ -363,6 +363,9 @@ wants_group.add_argument("--show-wants", action="store_true", \
 wants_group.add_argument("--hide-wants", action="store_false", dest="show_wants", default=True, \
                     help="Disable --show-wants.  This is the default.")
 
+parser.add_argument("--list-packages", action="store_true", default=False, \
+                    help="Only list package atoms in build plan.")
+
 parser.add_argument("--with-json", metavar="FILE", \
                     help="File into which JSON formatted plan will be written.")
 
@@ -403,6 +406,9 @@ if args.show_wants:
         node = (REQUIRED_PKGS[step[1]])
         wants = [edge.fqname for edge in node.edges]
         print(f"{step[0]:<7} {step[1].replace(':target',''):<25} (wants: {', '.join(wants).replace(':target','')})")
+elif args.list_packages:
+    for step in steps:
+        print(f"{step[1].replace(':target','')}")
 else:
     for step in steps:
         print(f"{step[0]:<7} {step[1].replace(':target','')}")
