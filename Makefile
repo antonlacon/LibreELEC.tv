@@ -15,6 +15,9 @@ noobs:
 clean:
 	./scripts/makefile_helper --clean
 
+clean-keep-toolchain:
+	./scripts/makefile_helper --clean-keep-toolchain
+
 distclean:
 	./scripts/makefile_helper --distclean
 
