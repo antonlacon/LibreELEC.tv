@@ -36,14 +36,14 @@ clean_keep_toolchain() {
   )
 
   # remove entries on toolchain_list from image_list
-  for package in "${toolchain_list}"; do
-    image_list=$(echo "${image_list}" | grep -v "${package}")
-  done
+  while read package; do
+      image_list=$(grep -v "${package}" <<< "${image_list}")
+  done <<< "${toolchain_list}"
 
   # clean remaining packages on image_list from $BUILD
-  for package in "${image_list}"; do
+  while read package; do
     "${SCRIPTS}/clean" "${package}"
-  done
+  done <<< "${image_list}"
 }
 
 # task handling
