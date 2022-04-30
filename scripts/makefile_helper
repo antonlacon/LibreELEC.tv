@@ -16,6 +16,36 @@ if [ -z "${BUILD_BASE}" ] || [ -z "${BUILD_ROOT}" ]; then
   exit 1
 fi
 
+# remove packages from $BUILD that are not part of toolchain meta-package
+clean_keep_toolchain() {
+  # source options here due to Jenkins issue (PR 6444)
+  . config/options ""
+
+  # package list from buildplan to create toolchain
+  local toolchain_list=$( \
+    "${SCRIPTS}/pkgjson" |
+    "${SCRIPTS}/genbuildplan.py" --hide-header --list-packages --build toolchain ${GENFLAGS} || \
+    die "error: ${0}: unable to generate toolchain build plan"
+  )
+
+  # package list from buildplan to create image
+  local image_list=$( \
+    "${SCRIPTS}/pkgjson" |
+    "${SCRIPTS}/genbuildplan.py" --hide-header --list-packages --build image ${GENFLAGS} || \
+    die "error: ${0}: unable to generate image build plan"
+  )
+
+  # remove entries on toolchain_list from image_list
+  for package in "${toolchain_list}"; do
+    image_list=$(echo "${image_list}" | grep -v "${package}")
+  done
+
+  # clean remaining packages on image_list from $BUILD
+  for package in "${image_list}"; do
+    "${SCRIPTS}/clean" "${package}"
+  done
+}
+
 # task handling
 case $1 in
   --clean)
@@ -23,6 +53,9 @@ case $1 in
     ;;
   --distclean)
     rm -rf "${BUILD_ROOT}/.ccache" "${BUILD_ROOT}/${BUILD_BASE}."*
+    ;;
+  --clean-keep-toolchain)
+    clean_keep_toolchain
     ;;
   *)
     echo "error: ${0}: unsupported option on CLI; aborting"
