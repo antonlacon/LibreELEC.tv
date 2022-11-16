@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0
-# Copyright (C) 2016-present Team LibreELEC (https://libreelec.tv)
+# Copyright (C) 2016-2022 Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="libretro-nestopia"
 PKG_VERSION="a05e5bce06177c73de6bd233973ed718566e3f9a"

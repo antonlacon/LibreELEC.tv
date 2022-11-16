@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0
-# Copyright (C) 2017-present Team LibreELEC (https://libreelec.tv)
+# Copyright (C) 2017-2021 Team LibreELEC (https://libreelec.tv)
 
 # devices have been renamed after LE9.2
 if [ "${1}" = "TinkerBoard.arm" -o "${1}" = "MiQi.arm" ]; then

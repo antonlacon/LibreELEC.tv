@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
-# Copyright (C) 2016-present Team LibreELEC (https://libreelec.tv)
+# Copyright (C) 2016-2021 Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="libdvbcsa"
 PKG_VERSION="2a1e61e569a621c55c2426f235f42c2398b7f18f" # 2018-01-29

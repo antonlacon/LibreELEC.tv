@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0
-# Copyright (C) 2019-present Team LibreELEC (https://libreelec.tv)
+# Copyright (C) 2019-2021 Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="libmali"
 PKG_VERSION="d4000def121b818ae0f583d8372d57643f723fdc"

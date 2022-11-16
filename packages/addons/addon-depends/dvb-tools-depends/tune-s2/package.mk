@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0
-# Copyright (C) 2017-present Team LibreELEC (https://libreelec.tv)
+# Copyright (C) 2017-2021 Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="tune-s2"
 PKG_VERSION="60cc4aaa70b646d38f2e40251860375283c44816"

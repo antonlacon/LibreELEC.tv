@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (C) 2011 Anthony Nash (nash.ant@gmail.com)
 # Copyright (C) 2009-2014 Stephan Raue (stephan@openelec.tv)
-# Copyright (C) 2018-present Team LibreELEC (https://libreelec.tv)
+# Copyright (C) 2018-2022 Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="open-vm-tools"
 PKG_VERSION="12.1.0"

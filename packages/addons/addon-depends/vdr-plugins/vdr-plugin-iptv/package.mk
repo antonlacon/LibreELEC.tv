@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
-# Copyright (C) 2016-present Team LibreELEC (https://libreelec.tv)
+# Copyright (C) 2016-2021 Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="vdr-plugin-iptv"
 PKG_VERSION="f7369c9578c1437c7a19cf11e21424844f42a341"

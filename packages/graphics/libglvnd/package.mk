@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0
-# Copyright (C) 2019-present Team LibreELEC (https://libreelec.tv)
+# Copyright (C) 2019-2022 Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="libglvnd"
 PKG_VERSION="1.5.0"

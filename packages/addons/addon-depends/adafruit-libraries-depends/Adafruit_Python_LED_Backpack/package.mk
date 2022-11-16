@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0
-# Copyright (C) 2016-present Team LibreELEC (https://libreelec.tv)
+# Copyright (C) 2016-2021 Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="Adafruit_Python_LED_Backpack"
 PKG_VERSION="e34b9548e86e63747563a94f02b65b2980fdefff"

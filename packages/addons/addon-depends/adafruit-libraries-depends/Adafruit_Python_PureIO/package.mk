@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0
-# Copyright (C) 2016-present Team LibreELEC (https://libreelec.tv)
+# Copyright (C) 2016-2021 Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="Adafruit_Python_PureIO"
 PKG_VERSION="6f4976d91c52d70b67b28bba75a429b5328a52c1"

@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0
-# Copyright (C) 2020-present Team LibreELEC (https://libreelec.tv)
+# Copyright (C) 2020-2022 Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="crust"
 PKG_VERSION="2e5f355790b5f9cd941f939280adda6b4b6581c0" # 2021-11-05

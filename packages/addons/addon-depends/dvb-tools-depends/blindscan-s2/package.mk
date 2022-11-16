@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0
-# Copyright (C) 2017-present Team LibreELEC (https://libreelec.tv)
+# Copyright (C) 2017-2021 Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="blindscan-s2"
 PKG_VERSION="28c50c6c3789ea3fcc11b992723d652378c0e925"

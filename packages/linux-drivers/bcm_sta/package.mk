@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
-# Copyright (C) 2018-present Team LibreELEC (https://libreelec.tv)
+# Copyright (C) 2018-2021 Team LibreELEC (https://libreelec.tv)
 
 # Downloadlocation:
 # http://www.broadcom.com/support/802.11/linux_sta.php

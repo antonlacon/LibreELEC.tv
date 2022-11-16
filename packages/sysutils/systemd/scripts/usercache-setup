@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # SPDX-License-Identifier: GPL-2.0
-# Copyright (C) 2017-present Team LibreELEC (https://libreelec.tv)
+# Copyright (C) 2017-2019 Team LibreELEC (https://libreelec.tv)
 
 # Fix bug in older versions creating file /storage/.cache/services
 [ -f /storage/.cache/services ] && rm /storage/.cache/services && mkdir -p /storage/.cache/services

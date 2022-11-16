@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
-# Copyright (C) 2017-present Team LibreELEC (https://libreelec.tv)
+# Copyright (C) 2017-2022 Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="iwlwifi-firmware"
 PKG_VERSION="2eb6baa08b3a3c9bf3f9f12ec6d9b94eca1d36e7"

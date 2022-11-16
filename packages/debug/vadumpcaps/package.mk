@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0
-# Copyright (C) 2020-present Team LibreELEC (https://libreelec.tv)
+# Copyright (C) 2020-2022 Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="vadumpcaps"
 PKG_VERSION="38a446e33de5e65f0e5d263dd9a262a4e316a461"

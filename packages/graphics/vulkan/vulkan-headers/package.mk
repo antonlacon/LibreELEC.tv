@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0
 # Copyright (C) 2018-present Frank Hartung (supervisedthinking (@) gmail.com)
-# Copyright (C) 2021-present Team LibreELEC (https://libreelec.tv)
+# Copyright (C) 2021-2022 Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="vulkan-headers"
 PKG_VERSION="1.3.232"

@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0
-# Copyright (C) 2021-present Team LibreELEC (https://libreelec.tv)
+# Copyright (C) 2021-2022 Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="libretro-dosbox-pure"
 PKG_VERSION="d22a43d80a4dd17d64bcbd3977c85d06ac2c0dfe"

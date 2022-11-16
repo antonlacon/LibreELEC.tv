@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0-only
-# Copyright (C) 2021-present Team LibreELEC (https://libreelec.tv)
+# Copyright (C) 2021-2022 Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="nextpvr"
 PKG_VERSION="6.1.0~Nexus"

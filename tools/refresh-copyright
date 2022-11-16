@@ -33,9 +33,9 @@ def get_commit_year(parent_git, filename):
     # don't update copyright based solely on update copyright commits
     cmd = shlex.split(f'git -C {parent_git} --no-pager log --max-count=1 --format="%s" {filename}')
     subject_message = subprocess.check_output(cmd).decode(DEFAULT_ENCODING).strip()
-    if commit_date and subject_message != 'treewide: automated copyright update':
+    return int(commit_date.split('-')[0]) if commit_date and subject_message != 'treewide: automated copyright update' else None
 #        print(f'{path=} {filename=} {commit_date=} {subject_message=}: True')
-        return int(commit_date.split('-')[0])
+#        return int(commit_date.split('-')[0])
     return None
 
 

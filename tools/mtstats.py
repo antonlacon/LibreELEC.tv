@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # SPDX-License-Identifier: GPL-2.0
-# Copyright (C) 2019-present Team LibreELEC (https://libreelec.tv)
+# Copyright (C) 2019-2020 Team LibreELEC (https://libreelec.tv)
 
 import sys, os, codecs, datetime, time
 import copy

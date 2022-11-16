@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0
-# Copyright (C) 2017-present Team LibreELEC (https://libreelec.tv)
+# Copyright (C) 2017-2021 Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="Adafruit_Python_SSD1306"
 PKG_VERSION="8819e2d203df49f2843059d981b7347d9881c82b"

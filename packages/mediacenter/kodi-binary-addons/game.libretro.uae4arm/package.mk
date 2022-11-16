@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0
-# Copyright (C) 2018-present Team LibreELEC (https://libreelec.tv)
+# Copyright (C) 2018-2021 Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="game.libretro.uae4arm"
 PKG_VERSION="ae25a2655717032add0ad95793929b039d4a87e5"

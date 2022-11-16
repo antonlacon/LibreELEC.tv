@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
-# Copyright (C) 2018-present Team LibreELEC (https://libreelec.tv)
+# Copyright (C) 2018-2022 Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="RTL8192DU"
 PKG_VERSION="176e190a5af8f6dfe624e67860483b46986bbd47"

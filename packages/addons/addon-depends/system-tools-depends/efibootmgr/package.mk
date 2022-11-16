@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0
-# Copyright (C) 2016-present Team LibreELEC (https://libreelec.tv)
+# Copyright (C) 2016-2021 Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="efibootmgr"
 PKG_VERSION="b9fedd6b6f57055164bc361bc5cf16a602843c6e" # Nov 5, 2021

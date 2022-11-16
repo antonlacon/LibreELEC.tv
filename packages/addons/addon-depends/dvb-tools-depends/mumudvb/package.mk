@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0
-# Copyright (C) 2017-present Team LibreELEC (https://libreelec.tv)
+# Copyright (C) 2017-2021 Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="mumudvb"
 PKG_VERSION="efc815ccecf5a2b9603027c959a4966fe501f6a5" # 2021-01-06

@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0
-# Copyright (C) 2018-present Team LibreELEC (https://libreelec.tv)
+# Copyright (C) 2018-2021 Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="tvh-dtv-scan-tables"
 PKG_VERSION="6bb0a70a0dcb97d5457c1ef4a7ccce634ea419b0"

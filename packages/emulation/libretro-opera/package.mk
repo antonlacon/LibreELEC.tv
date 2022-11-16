@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0
-# Copyright (C) 2021-present Team LibreELEC (https://libreelec.tv)
+# Copyright (C) 2021-2022 Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="libretro-opera"
 PKG_VERSION="3849c969c64b82e622a7655b327fa94bc5a4c7cc"

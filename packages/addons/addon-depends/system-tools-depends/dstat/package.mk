@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0
-# Copyright (C) 2016-present Team LibreELEC (https://libreelec.tv)
+# Copyright (C) 2016-2021 Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="dstat"
 PKG_VERSION="e428c7dc7137f81f8ca6bef8854b37a4ddd4f337" # 19 Jun 2020

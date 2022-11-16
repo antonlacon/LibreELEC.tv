@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # SPDX-License-Identifier: GPL-2.0
-# Copyright (C) 2020-present Team LibreELEC (https://libreelec.tv)
+# Copyright (C) 2020-2021 Team LibreELEC (https://libreelec.tv)
 
 # find heartbeat triggers and set them to none
 case $(dtsoc) in

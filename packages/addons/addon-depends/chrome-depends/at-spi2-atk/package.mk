@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (C) 2017 Escalade
-# Copyright (C) 2018-present Team LibreELEC (https://libreelec.tv)
+# Copyright (C) 2018-2021 Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="at-spi2-atk"
 PKG_VERSION="2.38.0"

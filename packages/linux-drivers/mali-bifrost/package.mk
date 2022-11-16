@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0
-# Copyright (C) 2019-present Team LibreELEC (https://libreelec.tv)
+# Copyright (C) 2019-2021 Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="mali-bifrost"
 PKG_VERSION="af7c8d8bcdedd792a8d101d3a11876bb8bcbe3da" # BX301A01B-SW-99002-r16p0-01rel0

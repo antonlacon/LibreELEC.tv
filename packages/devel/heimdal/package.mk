@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (C) 2009-2017 Stephan Raue (stephan@openelec.tv)
-# Copyright (C) 2018-present Team LibreELEC (https://libreelec.tv)
+# Copyright (C) 2018-2022 Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="heimdal"
 PKG_VERSION="c0bc8beb07d9733d4c8c17d120916552fe172f50"

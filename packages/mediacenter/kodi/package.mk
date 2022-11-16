@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
-# Copyright (C) 2017-present Team LibreELEC (https://libreelec.tv)
+# Copyright (C) 2017-2022 Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="kodi"
 PKG_VERSION="92a0283f169270dc205834b470c09c84e845dfc1"

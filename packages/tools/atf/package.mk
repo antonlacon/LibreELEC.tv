@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0
-# Copyright (C) 2018-present Team LibreELEC
+# Copyright (C) 2018-2022 Team LibreELEC
 
 PKG_NAME="atf"
 PKG_VERSION="2.7"

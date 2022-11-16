@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0
-# Copyright (C) 2018-present Team LibreELEC (https://libreelec.tv)
+# Copyright (C) 2018-2022 Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="libretro-vice"
 PKG_VERSION="a45757e66e6fc0b48c6a22354f06ca0e988aa5a5"

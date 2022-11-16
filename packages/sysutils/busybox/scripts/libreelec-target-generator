@@ -2,7 +2,7 @@
 
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (C) 2020-present Matthias Reichl <hias@horus.com>
-# Copyright (C) 2020-present Team LibreELEC (https://libreelec.tv)
+# Copyright (C) 2020-2021 Team LibreELEC (https://libreelec.tv)
 
 EARLY_DIR="$2"
 

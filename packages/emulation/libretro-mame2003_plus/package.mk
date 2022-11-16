@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0
-# Copyright (C) 2019-present Team LibreELEC (https://libreelec.tv)
+# Copyright (C) 2019-2022 Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="libretro-mame2003_plus"
 PKG_VERSION="713b74c1f94761bb1301b795c568983b55674b29"

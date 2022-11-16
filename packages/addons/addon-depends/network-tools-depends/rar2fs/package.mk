@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0
-# Copyright (C) 2019-present Team LibreELEC (https://libreelec.tv)
+# Copyright (C) 2019-2021 Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="rar2fs"
 PKG_VERSION="1.29.5"

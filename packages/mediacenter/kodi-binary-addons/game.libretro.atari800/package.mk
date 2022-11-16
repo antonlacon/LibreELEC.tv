@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0
-# Copyright (C) 2020-present Team LibreELEC (https://libreelec.tv)
+# Copyright (C) 2020-2022 Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="game.libretro.atari800"
 PKG_VERSION="3.1.0.18-Leia"

@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (C) 2019-present Peter Vicman (peter.vicman@gmail.com)
-# Copyright (C) 2020-present Team LibreELEC (https://libreelec.tv)
+# Copyright (C) 2020-2021 Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="apache-ant"
 PKG_VERSION="1.10.12"

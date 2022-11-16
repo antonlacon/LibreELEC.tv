@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0
-# Copyright (C) 2019-present Team LibreELEC (https://libreelec.tv)
+# Copyright (C) 2019-2021 Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="gnulib"
 # Match version with GNULIB_REVISION in grub bootstrap.conf

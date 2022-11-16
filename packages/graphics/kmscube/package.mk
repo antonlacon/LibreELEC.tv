@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0
-# Copyright (C) 2018-present Team LibreELEC (https://libreelec.tv)
+# Copyright (C) 2018-2021 Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="kmscube"
 PKG_VERSION="9f63f359fab1b5d8e862508e4e51c9dfe339ccb0"

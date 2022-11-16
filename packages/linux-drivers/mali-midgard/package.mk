@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0
-# Copyright (C) 2018-present Team LibreELEC (https://libreelec.tv)
+# Copyright (C) 2018-2022 Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="mali-midgard"
 PKG_VERSION="2c2accf67356463ee661627b8705429256011dcb" # TX011-SW-99002-r28p0-01rel0

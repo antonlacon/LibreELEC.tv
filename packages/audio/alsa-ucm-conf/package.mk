@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
-# Copyright (C) 2020-present Team LibreELEC (https://libreelec.tv)
+# Copyright (C) 2020-2022 Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="alsa-ucm-conf"
 PKG_VERSION="1.2.8"

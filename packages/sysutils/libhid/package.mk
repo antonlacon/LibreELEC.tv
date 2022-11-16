@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
-# Copyright (C) 2020-present Team LibreELEC (https://libreelec.tv)
+# Copyright (C) 2020-2021 Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="libhid"
 PKG_VERSION="9bbcb6484c91e2594614412e12ae85a144839634" # 0.2.17 + fixes
