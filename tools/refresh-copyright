@@ -1,0 +1,147 @@
+#!/usr/bin/env python
+
+# SPX-License-Identifier: GPL-2.0-only
+# Copyright (C) 2022 Ian Leonard (antonlacon@gmail.com)
+
+import argparse
+import os
+import re
+import shlex
+import subprocess
+import sys
+
+
+def test_if_text(filename):
+    '''Use "file" command to determine if file content text.'''
+    cmd = shlex.split(f'file -b -e soft {filename}')
+    if os.access(f'{filename}', os.R_OK):
+        cmd_result = subprocess.check_output(cmd).decode(DEFAULT_ENCODING).strip()
+        if (cmd_result != 'data' and \
+                cmd_result != 'Non-ISO extended-ASCII text, with no line terminators' and \
+                cmd_result != 'ISO-8859 text'):
+            return True
+        else:
+            return False
+    else:
+        print(f'ERROR: File unreadable: {filename}')
+    return False
+
+def get_commit_year(parent_git, filename):
+    '''Use "git" command to determine most recent commit year.'''
+    cmd = shlex.split(f'git -C {parent_git} --no-pager log --max-count=1 --format="%ci" {filename}')
+    commit_date = subprocess.check_output(cmd).decode(DEFAULT_ENCODING).strip()
+    # don't update copyright based solely on update copyright commits
+    cmd = shlex.split(f'git -C {parent_git} --no-pager log --max-count=1 --format="%s" {filename}')
+    subject_message = subprocess.check_output(cmd).decode(DEFAULT_ENCODING).strip()
+    if commit_date and subject_message != 'treewide: automated copyright update':
+#        print(f'{path=} {filename=} {commit_date=} {subject_message=}: True')
+        return int(commit_date.split('-')[0])
+    return None
+
+
+### MAIN ###
+if __name__ == "__main__":
+    # CLI Argument Parsing
+    parser = argparse.ArgumentParser()
+
+    # ClI Switches
+    parser.add_argument('-v', '--verbose',
+        help = 'Verbose output', action = 'store_true')
+    parser.add_argument('-i', '--input',
+        help = 'Input directory', nargs = "?")
+    args = parser.parse_args()
+
+    # Sanity checking input
+    path = args.input
+    if not path:
+        raise RuntimeError('ERROR: No input directory given.')
+    if not os.path.isdir(path):
+        raise FileNotFoundError(f'ERROR: Invalid directory: {path}')
+    if not os.path.isdir(f'{path}/.git'):
+        raise RuntimeError('ERROR: Input directory is not the root of a git tree: {path}')
+
+    VERBOSE = args.verbose
+    DEFAULT_ENCODING = sys.getdefaultencoding()
+
+
+    # Regexes
+    # Copyright (C) YEAR-present Team LibreELEC (https://libreelec.tv)
+    present_regex = re.compile('''\# Copyright \(C\) (\d+)-present Team LibreELEC''')
+    # Copyright (C) YEAR-YEAR Team LibreELEC (https://libreelec.tv)
+    multi_years_regex = re.compile('''\# Copyright \(C\) (\d+)-(\d+) Team LibreELEC''')
+    # Copyright (C) YEAR Team LibreELEC (https://libreelec.tv)
+    single_year_regex = re.compile('''\# Copyright \(C\) (\d+) Team LibreELEC''')
+
+
+    # Scan input directory
+    for (dirpath, dirnames, filenames) in os.walk(path):
+        # directories to skip
+        if '/.git' in dirpath:
+            continue
+        for f in filenames:
+            regex_result = None
+            origin_year = None
+            latest_copyright_year = None
+            commit_year = None
+
+            # only search for copyright header in text files, skipping patch, po, xml and hidden files
+            if (test_if_text(f'{dirpath}/{f}') and \
+                    not f.endswith('.patch') and \
+                    not f.endswith('.po') and \
+                    not f.endswith('.xml') and \
+                    not f.startswith('.')):
+                if VERBOSE:
+                    print(f'Parsing: {dirpath}/{f}')
+                with open(f'{dirpath}/{f}', 'r') as file_read:
+                    file_contents = file_read.read()
+
+                # test regex for Year-present
+                try:
+                    regex_result = present_regex.search(file_contents)
+                except Exception as E:
+                    print(f'Failed to parse file: {f}')
+                    print(E)
+                    continue
+                # test regex for Year-Year
+                if not regex_result:
+                    try:
+                        regex_result = multi_years_regex.search(file_contents)
+                    except Exception as E:
+                        print(f'Failed to parse file: {f}')
+                        print(E)
+                        continue
+                # test regex for Year
+                if not regex_result:
+                    try:
+                        regex_result = single_year_regex.search(file_contents)
+                    except Exception as E:
+                        print(f'Failed to parse file: {f}')
+                        print(E)
+                        continue
+
+                # a regex matched
+                if regex_result:
+                    regex_match = regex_result.group(0)
+                    origin_year = int(regex_result.group(1))
+                    if VERBOSE:
+                        print(f'  First copyright year: {origin_year}')
+                    try:
+                        latest_copyright_year = int(regex_result.group(2))
+                        if VERBOSE:
+                            print(f'  Latest copyright year: {latest_copyright_year}')
+                    except Exception:
+                        pass
+                    # ask git for the date of the most recent commit of the file
+                    commit_year = get_commit_year(path, f'{dirpath}/{f}')
+                    if VERBOSE:
+                        print(f'  Latest commit year: {commit_year}')
+
+
+                # date data retrieved
+                if origin_year and commit_year:
+                    # most recent year with a commit is newer than copyright range
+                    if origin_year < commit_year and latest_copyright_year != commit_year:
+                        copyright_header = f'# Copyright (C) {origin_year}-{commit_year} Team LibreELEC'
+                        file_contents = file_contents.replace(regex_match, copyright_header)
+                        with open(f'{dirpath}/{f}', 'w') as file_write:
+                            file_write.write(file_contents)
