@@ -28,6 +28,11 @@ if [ "$SAMBA_AUTOSHARE" == "true" ] ; then
   for dir in /media/* ; do
     if [ -d "$dir" ] ; then
       name=$(basename "$dir")
+      # insert a blank line as needed before adding entries
+      last_line=$(tail -1 $SMB_TMP)
+      if [ -n "${last_line}" ]; then
+        echo -e "\n" >> $SMB_TMP
+      fi
       echo -e "[$name]\n  path = $dir\n  available = yes\n  browseable = yes\n  public = yes\n  writeable = yes\n" >> $SMB_TMP
     fi
   done
@@ -35,6 +40,11 @@ fi
 
 # Allow access to a "failed" (safe mode) Kodi installation
 if [ -d /storage/.kodi.FAILED ]; then
+  # insert a blank line as needed before adding entries
+  last_line=$(tail -1 $SMB_TMP)
+  if [ -n "${last_line}" ]; then
+    echo -e "\n" >> $SMB_TMP
+  fi
   echo -e "[Kodi-Failed]\n  path = /storage/.kodi.FAILED\n  available = yes\n  browseable = yes\n  public = yes\n  writeable = yes\n" >> $SMB_TMP
 fi
 
