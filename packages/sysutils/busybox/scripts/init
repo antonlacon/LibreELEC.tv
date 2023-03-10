@@ -320,6 +320,7 @@ post_update_tasks() {
       sync
     StopProgress "done"
     [ -n "${result}" ] && echo "${result}"
+    sleep 10
   fi
 }
 
