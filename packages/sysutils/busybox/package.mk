@@ -169,6 +169,10 @@ post_install() {
   enable_service vfd-clock.service
   enable_service var.mount
   enable_service var-lib-extensions.mount
+  if [ "${WRITEABLE_ETC}" = "yes" ]; then
+    enable_service storage-dirs.service
+    enable_service etc.mount
+  fi
   enable_service locale.service
 
   # cron support
