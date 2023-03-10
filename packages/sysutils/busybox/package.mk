@@ -173,6 +173,10 @@ post_install() {
   enable_service show-version.service
   enable_service vfd-clock.service
   enable_service var.mount
+  if [ "${WRITEABLE_ETC}" = "yes" ]; then
+    enable_service storage-dirs.service
+    enable_service etc.mount
+  fi
   enable_service locale.service
   listcontains "${FIRMWARE}" "rpi-eeprom" && enable_service rpi-flash-firmware.service
 
