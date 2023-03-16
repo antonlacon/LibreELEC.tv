@@ -1,7 +1,8 @@
 [Unit]
 Description=Samba SMB Daemon
+Requires=systemd-tmpfiles-setup.service
 Wants=network-online.target nmbd.service
-After=network-online.target nmbd.service
+After=network-online.target nmbd.service systemd-tmpfiles-setup.service
 ConditionPathExists=!/storage/.cache/services/samba.disabled
 ConditionPathExists=/run/samba/smb.conf
 
