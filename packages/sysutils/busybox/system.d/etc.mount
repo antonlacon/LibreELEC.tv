@@ -1,7 +1,5 @@
 [Unit]
 Description=etc directory overlay
-After=storage-dirs.service
-Requires=storage-dirs.service
 ConditionPathIsDirectory=/storage/.filesystem/etc
 ConditionPathIsDirectory=/storage/.overlays/etc
 
