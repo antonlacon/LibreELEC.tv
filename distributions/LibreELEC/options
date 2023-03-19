@@ -92,7 +92,7 @@
   SWAPFILESIZE="128"
 
 # use an overlayfs for a writeable /etc/
-  WRITEABLE_ETC="no"
+  WRITEABLE_ETC="yes"
 
 # debug tty path
   DEBUG_TTY="/dev/tty3"
