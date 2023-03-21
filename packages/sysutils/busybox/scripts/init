@@ -234,28 +234,28 @@ check_is_compatible() {
   local update_filename="${1}"
   local old_project_arch new_project_arch
 
-  old_project_arch="$(get_project_arch "/sysroot")" || return
-  new_project_arch="$(get_project_arch "/update")" || return
+  OLD_PROJECT_ARCH="$(get_project_arch "/sysroot")" || return
+  NEW_PROJECT_ARCH="$(get_project_arch "/update")" || return
 
   # old image will be gone by the time post-update runs
   if [ -f "/update/usr/lib/libreelec/post-update" ]; then
-    export OLD_PROJECT_ARCH=$old_project_arch
-    export NEW_PROJECT_ARCH=$new_project_arch
+    export OLD_PROJECT_ARCH
+    export NEW_PROJECT_ARCH
     export OLD_DISTRO_VERSION="$(get_distro_version "/sysroot")"
     export NEW_DISTRO_VERSION="$(get_distro_version "/update")"
   fi
 
   # If old or new project/arch isn't available then could be very old (pre-/etc/os-release) build - have to trust it
-  if [ -n "${old_project_arch}" -a -n "${new_project_arch}" ]; then
+  if [ -n "${OLD_PROJECT_ARCH}" ] && [ -n "${NEW_PROJECT_ARCH}" ]; then
     # If the old project/arch is not compatible with the new project/arch then abort...
-    if ! is_compatible "${old_project_arch}" "${new_project_arch}"; then
+    if ! is_compatible "${OLD_PROJECT_ARCH}" "${NEW_PRJECT_ARCH}"; then
       echo ""
-      echo "ERROR: $(basename "${update_filename}") is not compatible with ${old_project_arch} hardware - update cancelled."
+      echo "ERROR: $(basename "${update_filename}") is not compatible with ${OLD_PROJECT_ARCH} hardware - update cancelled."
       echo ""
-      echo "Current system: ${old_project_arch}"
-      echo "Update  system: ${new_project_arch}"
+      echo "Current system: ${OLD_PROJECT_ARCH}"
+      echo "Update  system: ${NEW_PROJECT_ARCH}"
       echo ""
-      echo "Create $UPDATE_ROOT/.nocompat to disable compatibility checks and risk a non-booting system."
+      echo "Create ${UPDATE_ROOT}/.nocompat to disable compatibility checks and risk a non-booting system."
       echo ""
       return 1
     fi
