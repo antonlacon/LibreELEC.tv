@@ -26,6 +26,19 @@ This filters --all's build list to only ones with a build directory.
 PROJECT=W DEVICE=X ARCH=Y UBOOT_SYSTEM=Z ./download-cleaner.py
 
 This runs against the project/device/arch specificed on the CLI.
+
+For working with multiple git branches (different versions), there are
+additional options:
+
+--export filename to write a list of packages and their source tarballs to
+file. --export may not be invoked with --delete.
+
+./downloadcleaner.py --builddirs --export file1
+
+--import to load one or more files created by --export to include in the
+decision making of what to keep and what to delete.
+
+./downloadcleaner.py --builddirs --import file1
 '''
 
 
@@ -160,7 +173,7 @@ def parse_builder_options(file):
     return None
 
 
-# build list of packages with version wanted to build current git tree
+# build list of packages with desired versions to keep
 def get_git_packagelist():
     '''Create list of packages and their downloaded filenames for every setup in builds'''
     if args.all or args.builddirs:
@@ -176,9 +189,24 @@ def get_git_packagelist():
             print('Error: Unkown build. Set PROJECT, DEVICE, ARCH and, if needed, UBOOT_SYSTEM or invoke with --all')
             sys.exit(1)
     pkg_list = []
+
+    # process each file given to --import, adding new content to pkg_list
+    if args.input:
+        for input_file in args.input:
+            input_path = os.path.join(os.getcwd(), input_file)
+            if os.path.isfile(input_path):
+                with open(input_path, mode='r') as data:
+                    content = data.read()
+                for line in content.splitlines():
+                    item, pkg_filename = line.split(' ')
+                    if [item, pkg_filename] not in pkg_list:
+                        pkg_list.append([item, pkg_filename])
+            else:
+                print(f'Error: File not found: {input_path}')
+                sys.exit(1)
+
     if args.builddirs:
         le_version, os_version = parse_distro_info()
-
     for build in builds:
         # skip entries from builds_all if not build directory present for it
         if args.builddirs and not os.path.isdir(f'{os.getcwd()}/build.{DISTRO_NAME}-{build[1]}.{build[2]}-{os_version}-{le_version}'):
@@ -252,40 +280,58 @@ def prune_source_dir():
                     os.remove(file)
 
 
-parser = argparse.ArgumentParser(description="""
-Prints, and optionally deletes, a list of directories and files from the buildsystem's
-sources directory. Considers one, some, or all project builds in determining stale downloads.
-Specify PROJECT=W DEVICE=X ARCH=Y UBOOT_SYSTEM=Z like other build commands to prune to a single
-project build's files. Specify other options listed below to consider more than one project build.
-""")
-parser.add_argument('-a', '--all', action='store_true', \
-                   help='Consider all project/devices when determining what files to keep in sources directory.')
-parser.add_argument('-b', '--builddirs', action='store_true', \
-                   help='Filter build list used by --all to only include builds with a present project/device/arch build directory.')
-parser.add_argument('-d', '--delete', action='store_true', \
-                   help='Delete files in addition to listing them.')
-args = parser.parse_args()
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description="""
+    Prints, and optionally deletes, a list of directories and files from the buildsystem's
+    sources directory. Considers one, some, or all project builds in determining stale downloads.
+    Specify PROJECT=W DEVICE=X ARCH=Y UBOOT_SYSTEM=Z like other build commands to prune to a single
+    project build's files. Specify other options listed below to consider more than one project build.
+    """)
+    parser.add_argument('-a', '--all', action='store_true', \
+                       help='Consider all project/devices when determining what files to keep in sources directory.')
+    parser.add_argument('-b', '--builddirs', action='store_true', \
+                       help='Filter build list used by --all to only include builds with a present project/device/arch build directory.')
+    result_group = parser.add_mutually_exclusive_group()
+    result_group.add_argument('-d', '--delete', action='store_true', \
+                       help='Delete files in addition to listing them.')
+    result_group.add_argument('-e', '--export', action='store', nargs='?', \
+                       help='Export list of package source files to keep to file.')
+    parser.add_argument('-i', '--import', action='store', nargs='*', dest='input', \
+                       help='Import list of package source files from one or more files to keep')
+    args = parser.parse_args()
 
 
-# sources directory
-SOURCES_DIR = None
-# in tree git controlled options that may contain SOURCES_DIR
-if os.path.isfile(f'{os.getcwd()}/.libreelec/options'):
-    SOURCES_DIR = parse_builder_options(f'{os.getcwd()}/.libreelec/options')
-# global options in home may contain SOURCES_DIR
-if os.path.isfile(f'{os.getenv("HOME")}/.libreelec/options'):
-    SOURCES_DIR = parse_builder_options(f'{os.getenv("HOME")}/.libreelec/options')
-# default SOURCES
-if not SOURCES_DIR:
-    SOURCES_DIR = f'{os.getcwd()}/sources'
-# expands ~ to home dir
-SOURCES_DIR = os.path.expanduser(SOURCES_DIR)
-# expands $HOME to home dir
-SOURCES_DIR = os.path.expandvars(SOURCES_DIR)
+    # sources directory
+    SOURCES_DIR = None
+    # in tree git controlled options that may contain SOURCES_DIR
+    if os.path.isfile(f'{os.getcwd()}/.libreelec/options'):
+        SOURCES_DIR = parse_builder_options(f'{os.getcwd()}/.libreelec/options')
+    # global options in home may contain SOURCES_DIR
+    if os.path.isfile(f'{os.getenv("HOME")}/.libreelec/options'):
+        SOURCES_DIR = parse_builder_options(f'{os.getenv("HOME")}/.libreelec/options')
+    # default SOURCES
+    if not SOURCES_DIR:
+        SOURCES_DIR = f'{os.getcwd()}/sources'
+    # expands ~ to home dir
+    SOURCES_DIR = os.path.expanduser(SOURCES_DIR)
+    # expands $HOME to home dir
+    SOURCES_DIR = os.path.expandvars(SOURCES_DIR)
 
-if not os.path.isdir(SOURCES_DIR):
-    print(f'Error: Abort: Unable to find directory: {SOURCES_DIR}')
-    sys.exit(1)
+    if not os.path.isdir(SOURCES_DIR):
+        print(f'Error: Abort: Unable to find directory: {SOURCES_DIR}')
+        sys.exit(1)
 
 
-prune_source_dir()
+    if args.export:
+        export_path = os.path.join(os.getcwd(), args.export)
+        if not os.path.isfile(export_path):
+            pkg_list = get_git_packagelist()
+            with open(export_path, mode='w') as export_file:
+                for package in pkg_list:
+                    export_file.write(f'{package[0]} {package[1]}\n')
+            print(f'Exported list of files to keep to: {export_path}')
+        else:
+            print(f'Error: Export file already exists: {export_path}')
+            sys.exit(1)
+    else:
+        prune_source_dir()
