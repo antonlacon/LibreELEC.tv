@@ -63,7 +63,6 @@ PKG_MESON_OPTS_TARGET="--libdir=/usr/lib \
                        -Dlogind=true \
                        -Dhostnamed=true \
                        -Dlocaled=false \
-                       -Dmachined=false \
                        -Dportabled=false \
                        -Duserdb=false \
                        -Dhomed=disabled \
@@ -106,6 +105,12 @@ if [ "${PROJECT}" = "Generic" ]; then
   PKG_MESON_OPTS_TARGET+=" -Defi=true"
 else
   PKG_MESON_OPTS_TARGET+=" -Defi=false"
+fi
+
+if [ "${NSPAWN_SUPPORT}" = "yes" ]; then
+  PKG_MESON_OPTS_TARGET+=" -Dmachined=true"
+else
+  PKG_MESON_OPTS_TARGET+=" -Dmachined=false"
 fi
 
 pre_configure_target() {
@@ -156,8 +161,10 @@ post_makeinstall_target() {
   sed '/^ConditionNeedsUpdate=.*$/d' -i ${INSTALL}/usr/lib/systemd/system/systemd-hwdb-update.service
 
   # remove nspawn
-  safe_remove ${INSTALL}/usr/bin/systemd-nspawn
-  safe_remove ${INSTALL}/usr/lib/systemd/system/systemd-nspawn@.service
+  if [ ${NSPAWN_SUPPORT} != "yes" ]; then
+    safe_remove ${INSTALL}/usr/bin/systemd-nspawn
+    safe_remove ${INSTALL}/usr/lib/systemd/system/systemd-nspawn@.service
+  fi
 
   # remove timedatectl
   safe_remove ${INSTALL}/usr/bin/timedatectl
