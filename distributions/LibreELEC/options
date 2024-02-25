@@ -201,7 +201,7 @@
   DEBUG_GROUP_YES="kodi+"
 
 # include systemd-nspawn support (yes / no)
-  NSPAWN_SUPPORT="no"
+  NSPAWN_SUPPORT="yes"
 
 # build with NFS support (mounting nfs shares via the OS) (yes / no)
   NFS_SUPPORT="yes"
