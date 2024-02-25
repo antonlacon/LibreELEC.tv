@@ -200,7 +200,7 @@
   DEBUG_GROUP_YES="kodi+"
 
 # include systemd-nspawn support (yes / no)
-  NSPAWN_SUPPORT="no"
+  NSPAWN_SUPPORT="yes"
 
 # build and install iSCSI support - iscsistart (yes / no)
   ISCSI_SUPPORT="no"
