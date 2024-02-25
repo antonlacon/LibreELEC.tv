@@ -171,6 +171,10 @@ post_makeinstall_target() {
   if [ ${NSPAWN_SUPPORT} != "yes" ]; then
     safe_remove ${INSTALL}/usr/bin/systemd-nspawn
     safe_remove ${INSTALL}/usr/lib/systemd/system/systemd-nspawn@.service
+    safe_remove ${INSTALL}/usr/lib/tmpfiles.d/z_02_systemd-nspawn.conf
+    safe_remove ${INSTALL}/usr/lib/systemd/system/nspawn-symlink.service
+  else
+    find_file_path scripts/nspawn-symlink && cp -PRv ${FOUND_PATH} ${INSTALL}/usr/bin
   fi
 
   # remove timedatectl
@@ -333,5 +337,8 @@ post_install() {
   enable_service systemd-userdbd.socket
   if [ "${LOCAL_LOGIN}" = "yes" ]; then
     enable_service getty@tty0.service
+  fi
+  if [ "${NSPAWN_SUPPORT}" = "yes" ]; then
+    enable_service nspawn-symlink.service
   fi
 }
