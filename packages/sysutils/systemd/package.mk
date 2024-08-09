@@ -279,6 +279,9 @@ post_makeinstall_target() {
   ln -sf /storage/.config/logind.conf.d ${INSTALL}/etc/systemd/logind.conf.d
   ln -sf /storage/.config/sleep.conf.d ${INSTALL}/etc/systemd/sleep.conf.d
   ln -sf /storage/.config/timesyncd.conf.d ${INSTALL}/etc/systemd/timesyncd.conf.d
+  if [ "${NSPAWN_SUPPORT}" = "yes" ]; then
+    ln -sf /storage/.config/nspawn ${INSTALL}/etc/systemd/nspawn
+  fi
   safe_remove ${INSTALL}/etc/sysctl.d
   ln -sf /storage/.config/sysctl.d ${INSTALL}/etc/sysctl.d
   safe_remove ${INSTALL}/etc/tmpfiles.d
