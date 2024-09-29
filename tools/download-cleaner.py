@@ -174,7 +174,7 @@ def parse_builder_options(file):
 
 # build list of packages with desired versions to keep
 def get_git_packagelist():
-    '''Create list of packages and their downloaded filenames for every setup in builds'''
+    '''Create list of packages, their source package filenames, and URL to download for every setup in builds'''
     if args.all or args.builddirs:
         builds = builds_all
     else:
@@ -197,9 +197,9 @@ def get_git_packagelist():
                 with open(input_path, mode='r') as data:
                     content = data.read()
                 for line in content.splitlines():
-                    item, pkg_filename = line.split(' ')
-                    if [item, pkg_filename] not in pkg_list:
-                        pkg_list.append([item, pkg_filename])
+                    item, pkg_filename, pkg_url = line.split(' ')
+                    if [item, pkg_filename, pkg_url] not in pkg_list:
+                        pkg_list.append([item, pkg_filename, pkg_url])
             else:
                 print(f'Error: File not found: {input_path}')
                 sys.exit(1)
@@ -222,11 +222,12 @@ def get_git_packagelist():
                 pkg_filename = execute(f'{cmd_build} tools/pkginfo --strip {item}').strip()
                 for line in pkg_filename.splitlines():
                     if line.startswith('PKG_URL'):
-                        pkg_filename = line.split('=')[-1].strip('"').split('/')[-1]
+                        pkg_url = line.split('=')[-1].strip('"')
+                        pkg_filename = pkg_url.split('/')[-1]
                         break
                 # add package and filename to master list if not present
-                if pkg_filename and [item, pkg_filename] not in pkg_list:
-                    pkg_list.append([item, pkg_filename])
+                if pkg_filename and pkg_url and [item, pkg_filename, pkg_url] not in pkg_list:
+                    pkg_list.append([item, pkg_filename, pkg_url])
     return pkg_list
 
 
@@ -327,7 +328,7 @@ if __name__ == '__main__':
             pkg_list = get_git_packagelist()
             with open(export_path, mode='w') as export_file:
                 for package in pkg_list:
-                    export_file.write(f'{package[0]} {package[1]}\n')
+                    export_file.write(f'{package[0]} {package[1]} {package[2]}\n')
             print(f'Exported list of files to keep to: {export_path}')
         else:
             print(f'Error: Export file already exists: {export_path}')
