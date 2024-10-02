@@ -30,6 +30,9 @@ LDFLAGS_OPTIM_LTO_COMMON="-fuse-linker-plugin"
 # linker specific flags
 LDFLAGS_OPTIM_LINKER_COMPILER_DEFAULT=""
 LDFLAGS_OPTIM_LINKER_BFD="-fuse-ld=bfd"
+if [ $TARGET_ARCH != "arm" ]; then
+  LDFLAGS_OPTIM_LINKER_BFD+=" -Wl,-z,pack-relative-relocs"
+fi
 LDFLAGS_OPTIM_LINKER_GOLD="-fuse-ld=gold"
 LDFLAGS_OPTIM_LINKER_MOLD="-fuse-ld=mold"
 
