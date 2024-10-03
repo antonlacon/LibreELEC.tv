@@ -1,9 +1,11 @@
 #!/bin/bash
 
-# SPDX-License-Identifier: GPL-2.0
+# SPDX-License-Identifier: GPL-2.0-only
 # Copyright (C) 2024 Ian Leonard (antonlacon@gmail.com)
 
 set -e
+
+THREADCOUNT="${THREADCOUNT:-$(nproc)}"
 
 # helper functions
 # die (message, code) abort with optional message and error code
@@ -12,6 +14,29 @@ die() {
     echo -e "${1}" >&2
   fi
   exit "${2:-1}"
+}
+
+# download_tarball (package, url) download package from url
+download_tarball() {
+  local pkg_name=$(echo "${1}" | cut -d":" -f1)
+  local pkg_url="${2}"
+  local pkg_filename=$(basename "${pkg_url}")
+
+  echo "name: ${pkg_name}"
+  echo "url: ${pkg_url}"
+  echo "filename: ${pkg_filename}"
+
+  if [ ! -d "${OUTPUT_DIR}/${pkg_name}" ]; then
+    mkdir -p "${OUTPUT_DIR}/${pkg_name}"
+  fi
+  if [ ! -f "${OUTPUT_DIR}/${pkg_name}/${pkg_filename}" ]; then
+    if [ "${VERBOSE}" = "true" ]; then
+      echo "Downloading: ${pkg_name}"
+    else
+      local verbose_opts="--silent --show-error"
+    fi
+    curl --progress-bar ${verbose_opts} --connect-timeout 30 --retry 3 --continue-at - --location --max-redirs 5 --output-dir "${OUTPUT_DIR}/${pkg_name}/" --output "${pkg_filename}" "${pkg_url}"
+  fi
 }
 
 help() {
@@ -46,7 +71,6 @@ while getopts hi:o:v OPT; do
       ;;
   esac
 done
-
 shift $((${OPTIND} - 1))
 
 # sanity checking
@@ -57,20 +81,24 @@ if [ -z "${OUTPUT_DIR}" ]; then
   die "Error: Output directory must be specified."
 fi
 
-# import file or read from stdin
-while read -r line; do
-  PKG_NAME=$(echo "${line}" | cut -d" " -f1 | cut -d":" -f1)
-  PKG_URL=$(echo "${line}" | cut -d" " -f2)
-  PKG_FILENAME=$(basename "${PKG_URL}")
-  if [ ! -d "${OUTPUT_DIR}/${PKG_NAME}" ]; then
-    mkdir -p "${OUTPUT_DIR}/${PKG_NAME}"
-  fi
-  if [ ! -f "${OUTPUT_DIR}/${PKG_NAME}/${PKG_FILENAME}" ]; then
-    if [ "${VERBOSE}" = "true" ]; then
-      echo "Downloading: ${PKG_NAME}"
-    else
-      VERBOSE_OPTS="--silent --show-error"
-    fi
-    curl --progress-bar ${VERBOSE_OPTS} --connect-timeout 30 --retry 3 --continue-at - --location --max-redirs 5 --output-dir "${OUTPUT_DIR}/${PKG_NAME}/" --output "${PKG_FILENAME}" "${PKG_URL}"
-  fi
-done < "${INPUT_FILE:-/dev/stdin}"
+# multithread with gnu parallel when available
+if command -v parallel >/dev/null; then
+  # import file or read from stdin
+  while read -r line; do
+    PKG_LIST+="${line}"$'\n'
+  done <"${INPUT_FILE:-/dev/stdin}"
+  # drop final line as an empty newline
+  PKG_LIST=$(echo "${PKG_LIST}" | head --lines=-1)
+
+  export -f download_tarball
+  export OUTPUT_DIR
+  export VERBOSE
+  parallel --no-notice --jobs "${THREADCOUNT}" --colsep ' ' download_tarball <<<"${PKG_LIST}"
+else
+  # import file or read from stdin
+  while read -r line; do
+    PKG_NAME=$(echo "${line}" | cut -d" " -f1 | cut -d":" -f1)
+    PKG_URL=$(echo "${line}" | cut -d" " -f2)
+    download_tarball "${PKG_NAME}" "${PKG_URL}"
+  done <"${INPUT_FILE:-/dev/stdin}"
+fi
