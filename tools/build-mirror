@@ -16,26 +16,44 @@ die() {
   exit "${2:-1}"
 }
 
-# download_tarball (package, url) download package from url
-download_tarball() {
-  local pkg_name=$(echo "${1}" | cut -d":" -f1)
-  local pkg_url="${2}"
-  local pkg_filename=$(basename "${pkg_url}")
+# verify_checksum (file, checksum) verify checksum of file vs sha256sum, delete on mismatch
+verify_checksum() {
+  local file checksum file_checksum
+  file="${1}"
+  checksum="${2}"
 
-  echo "name: ${pkg_name}"
-  echo "url: ${pkg_url}"
-  echo "filename: ${pkg_filename}"
+  file_checksum=$(sha256sum "${file}" | cut -d" " -f1)
+  if [ "${file_checksum}" != "${checksum}" ]; then
+    echo "Error: Checksum failure: ${file}"
+    echo "  Wanted: ${checksum}"
+    echo "  Got: ${file_checksum}"
+    echo "  Deleting..."
+    rm "${file}"
+  fi
+}
+
+# download_tarball (package, url, sha256) download package from url with sha256 checksum
+download_tarball() {
+  local pkg_name pkg_url pkg_filename pkg_sha256 checksum_result
+  pkg_name=$(echo "${1}" | cut -d":" -f1)
+  pkg_url="${2}"
+  pkg_filename=$(basename "${pkg_url}")
+  pkg_sha256="${3}"
 
   if [ ! -d "${OUTPUT_DIR}/${pkg_name}" ]; then
     mkdir -p "${OUTPUT_DIR}/${pkg_name}"
   fi
+  if [ -f "${OUTPUT_DIR}/${pkg_name}/${pkg_filename}" ]; then
+    verify_checksum "${OUTPUT_DIR}/${pkg_name}/${pkg_filename}" "${pkg_sha256}"
+  fi
   if [ ! -f "${OUTPUT_DIR}/${pkg_name}/${pkg_filename}" ]; then
     if [ "${VERBOSE}" = "true" ]; then
-      echo "Downloading: ${pkg_name}"
+      echo "Downloading: ${pkg_name}/${pkg_filename}"
     else
       local verbose_opts="--silent --show-error"
     fi
     curl --progress-bar ${verbose_opts} --connect-timeout 30 --retry 3 --continue-at - --location --max-redirs 5 --output-dir "${OUTPUT_DIR}/${pkg_name}/" --output "${pkg_filename}" "${pkg_url}"
+    verify_checksum "${OUTPUT_DIR}/${pkg_name}/${pkg_filename}" "${pkg_sha256}"
   fi
 }
 
@@ -91,6 +109,7 @@ if command -v parallel >/dev/null; then
   PKG_LIST=$(echo "${PKG_LIST}" | head --lines=-1)
 
   export -f download_tarball
+  export -f verify_checksum
   export OUTPUT_DIR
   export VERBOSE
   parallel --no-notice --jobs "${THREADCOUNT}" --colsep ' ' download_tarball <<<"${PKG_LIST}"
@@ -99,6 +118,7 @@ else
   while read -r line; do
     PKG_NAME=$(echo "${line}" | cut -d" " -f1 | cut -d":" -f1)
     PKG_URL=$(echo "${line}" | cut -d" " -f2)
-    download_tarball "${PKG_NAME}" "${PKG_URL}"
+    PKG_SHA256=$(echo "${line}" | cut -d" " -f3)
+    download_tarball "${PKG_NAME}" "${PKG_URL}" "${PKG_SHA256}"
   done <"${INPUT_FILE:-/dev/stdin}"
 fi
