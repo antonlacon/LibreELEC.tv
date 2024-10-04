@@ -180,7 +180,8 @@ def get_git_packagelist():
         cmd_result = execute(f'{cmd_buildplan}')
         if cmd_result:
             for item in cmd_result.splitlines():
-                # get package filename
+                pkg_url = None
+                # get package details
                 pkg_details = execute(f'{cmd_build} tools/pkginfo --strip {item}').strip()
                 for line in pkg_details.splitlines():
                     if line.startswith('PKG_URL'):
@@ -208,17 +209,22 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
 
-    pkg_list = get_git_packagelist()
+    # sanity check
     if args.export:
         export_path = args.export if args.export.startswith('/') else os.path.join(os.getcwd(), args.export)
+        if os.path.isfile(export_path):
+            print(f'Error: Export file already exists: {export_path}')
+            sys.exit(1)
+
+
+    # get package details to build a source repository mirror
+    pkg_list = get_git_packagelist()
+    if args.export:
         if not os.path.isfile(export_path):
             with open(export_path, mode='w', encoding='utf-8') as export_file:
                 for package in pkg_list:
                     export_file.write(f'{package[0]} {package[1]}\n')
             print(f'Exported list of files to: {export_path}')
-        else:
-            print(f'Error: Export file already exists: {export_path}')
-            sys.exit(1)
     else:
         for package in pkg_list:
             print(f'{package[0]} {package[1]}')
