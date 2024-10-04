@@ -181,15 +181,21 @@ def get_git_packagelist():
         if cmd_result:
             for item in cmd_result.splitlines():
                 pkg_url = None
+                pkg_sha256 = None
                 # get package details
                 pkg_details = execute(f'{cmd_build} tools/pkginfo --strip {item}').strip()
                 for line in pkg_details.splitlines():
                     if line.startswith('PKG_URL'):
                         pkg_url = line.split('=')[-1].strip('"')
+                        continue
+                    if line.startswith('PKG_SHA256'):
+                        pkg_sha256 = line.split('=')[-1].strip('"')
+                        continue
+                    if pkg_url and pkg_sha256:
                         break
                 # add package and filename to master list if not present
-                if pkg_url and [item, pkg_url] not in pkg_list:
-                    pkg_list.append([item, pkg_url])
+                if pkg_url and pkg_sha256 and [item, pkg_url, pkg_sha256] not in pkg_list:
+                    pkg_list.append([item, pkg_url, pkg_sha256])
     return pkg_list
 
 
@@ -223,8 +229,8 @@ if __name__ == '__main__':
         if not os.path.isfile(export_path):
             with open(export_path, mode='w', encoding='utf-8') as export_file:
                 for package in pkg_list:
-                    export_file.write(f'{package[0]} {package[1]}\n')
+                    export_file.write(f'{package[0]} {package[1]} {package[2]}\n')
             print(f'Exported list of files to: {export_path}')
     else:
         for package in pkg_list:
-            print(f'{package[0]} {package[1]}')
+            print(f'{package[0]} {package[1]} {package[2]}')
