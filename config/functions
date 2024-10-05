@@ -299,7 +299,7 @@ get_target_linker() {
 
 setup_toolchain() {
   if [ "$LTO_SUPPORT" = "yes" ]; then
-    if flag_enabled "lto" "no"; then
+    if flag_enabled "lto" "yes"; then
       TARGET_CFLAGS+=" $FLAGS_OPTIM_LTO"
       TARGET_CXXFLAGS+=" $FLAGS_OPTIM_LTO"
     else
