@@ -12,13 +12,13 @@ PKG_DEPENDS_TARGET="toolchain JsonSchemaBuilder:host TexturePacker:host Python3 
 PKG_DEPENDS_UNPACK="commons-lang3 commons-text groovy"
 PKG_DEPENDS_HOST="toolchain"
 PKG_LONGDESC="A free and open source cross-platform media player."
-PKG_BUILD_FLAGS="+speed"
+PKG_BUILD_FLAGS="+speed -lto"
 
 configure_package() {
   # Single threaded LTO is very slow so rely on Kodi for parallel LTO support
-  if [ "${LTO_SUPPORT}" = "yes" ] && ! build_with_debug; then
-    PKG_KODI_USE_LTO="-DUSE_LTO=${CONCURRENCY_MAKE_LEVEL}"
-  fi
+#  if [ "${LTO_SUPPORT}" = "yes" ] && ! build_with_debug; then
+#    PKG_KODI_USE_LTO="-DUSE_LTO=${CONCURRENCY_MAKE_LEVEL}"
+#  fi
 
   # Set linker options
   case $(get_target_linker) in

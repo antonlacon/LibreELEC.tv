@@ -9,6 +9,7 @@ PKG_SITE="https://libevent.org/"
 PKG_URL="https://github.com/libevent/libevent/releases/download/release-${PKG_VERSION}-stable/libevent-${PKG_VERSION}-stable.tar.gz"
 PKG_DEPENDS_TARGET="toolchain"
 PKG_LONGDESC="libevent – an event notification library"
+PKG_BUILD_FLAGS="-lto"
 
 PKG_CMAKE_OPTS_TARGET="-DEVENT__LIBRARY_TYPE=STATIC \
                        -DEVENT__DISABLE_DEBUG_MODE=ON \

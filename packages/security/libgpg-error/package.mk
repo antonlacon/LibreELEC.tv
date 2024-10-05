@@ -10,6 +10,7 @@ PKG_SITE="https://www.gnupg.org"
 PKG_URL="https://www.gnupg.org/ftp/gcrypt/libgpg-error/${PKG_NAME}-${PKG_VERSION}.tar.bz2"
 PKG_DEPENDS_TARGET="autotools:host gcc:host"
 PKG_LONGDESC="A library that defines common error values for all GnuPG components."
+PKG_BUILD_FLAGS="-lto"
 
 pre_configure_target() {
   PKG_CONFIGURE_OPTS_TARGET="CC_FOR_BUILD=${HOST_CC} --enable-static --disable-shared --disable-nls --disable-rpath --with-gnu-ld --with-pic"

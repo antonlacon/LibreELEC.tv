@@ -10,7 +10,7 @@ PKG_URL="http://www.oberhumer.com/opensource/lzo/download/${PKG_NAME}-${PKG_VERS
 PKG_DEPENDS_HOST="cmake:host ninja:host"
 PKG_DEPENDS_TARGET="cmake:host gcc:host ninja:host"
 PKG_LONGDESC="A data compression library which is suitable for data de-/compression."
-PKG_BUILD_FLAGS="+pic"
+PKG_BUILD_FLAGS="+pic -lto"
 
 PKG_CMAKE_OPTS_HOST="-DENABLE_SHARED=OFF -DENABLE_STATIC=ON"
 PKG_CMAKE_OPTS_TARGET="-DENABLE_SHARED=OFF -DENABLE_STATIC=ON"

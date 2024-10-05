@@ -9,6 +9,7 @@ PKG_SITE="http://www.linux-nfs.org/"
 PKG_URL="https://www.kernel.org/pub/linux/utils/nfs-utils/${PKG_VERSION}/nfs-utils-${PKG_VERSION}.tar.xz"
 PKG_DEPENDS_TARGET="toolchain keyutils libevent libtirpc libxml2 rpcbind sqlite util-linux"
 PKG_LONGDESC="Linux NFS userland utility package"
+PKG_BUILD_FLAGS="-lto"
 
 PKG_CONFIGURE_OPTS_TARGET="--disable-gss \
                            --disable-nfsv41 \

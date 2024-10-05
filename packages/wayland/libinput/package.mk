@@ -10,6 +10,7 @@ PKG_SITE="https://www.freedesktop.org/wiki/Software/libinput/"
 PKG_URL="https://gitlab.freedesktop.org/libinput/libinput/-/archive/${PKG_VERSION}/${PKG_NAME}-${PKG_VERSION}.tar.bz2"
 PKG_DEPENDS_TARGET="toolchain systemd libevdev mtdev"
 PKG_LONGDESC="libinput is a library to handle input devices in Wayland compositors and to provide a generic X.Org input driver."
+PKG_BUILD_FLAGS="-lto"
 
 PKG_MESON_OPTS_TARGET="-Dlibwacom=false \
                        -Ddebug-gui=false \

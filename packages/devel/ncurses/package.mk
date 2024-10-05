@@ -11,7 +11,7 @@ PKG_URL="http://invisible-mirror.net/archives/ncurses/ncurses-${PKG_VERSION}.tar
 PKG_DEPENDS_HOST="ccache:host"
 PKG_DEPENDS_TARGET="autotools:host gcc:host zlib ncurses:host"
 PKG_LONGDESC="A library is a free software emulation of curses in System V Release 4.0, and more."
-PKG_BUILD_FLAGS="+pic"
+PKG_BUILD_FLAGS="+pic -lto"
 
 PKG_CONFIGURE_OPTS_TARGET="--without-ada \
                            --without-cxx \
