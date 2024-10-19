@@ -16,7 +16,6 @@ die() {
 
 help() {
   echo "Usage: ${0} [-i file] [-o directory]"
-  echo "Set PROJECT, DEVICE and ARCH as required."
   echo "  -h this help"
   echo "  -i input file - list of files to download"
   echo "  -o output directory - location to download files"
@@ -71,6 +70,6 @@ while read -r line; do
     else
       VERBOSE_OPTS="--silent --show-error"
     fi
-    curl --progress-bar ${VERBOSE_OPTS} --connect-timeout 30 --retry 3 --continue-at - --location --max-redirs 5 --output-dir "${OUTPUT_DIR}/${PKG_NAME}/" --output "${PKG_FILENAME}" "${PKG_URL}"
+    curl --progress-bar ${VERBOSE_OPTS} --fail --connect-timeout 30 --retry 3 --continue-at - --location --max-redirs 5 --output-dir "${OUTPUT_DIR}/${PKG_NAME}/" --output "${PKG_FILENAME}" "${PKG_URL}"
   fi
 done < "${INPUT_FILE:-/dev/stdin}"
