@@ -138,6 +138,10 @@ get_graphicdrivers() {
     COMPOSITE_SUPPORT="yes"
   fi
 
+  if listcontains "${GRAPHIC_DRIVERS}" "zink"; then
+    GALLIUM_DRIVERS+=" zink"
+  fi
+
   # VDPAU Support depends on X11
   if [ ! "${DISPLAYSERVER}" = "x11" ]; then
     VDPAU_SUPPORT="no"
