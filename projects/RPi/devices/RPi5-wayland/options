@@ -52,3 +52,9 @@
 
   # Xorg Graphic Drivers to use (all / vc4 / zink / none)
     GRAPHIC_DRIVERS="vc4 zink"
+
+ # Displayserver to use (wl / no)
+    DISPLAYSERVER="wl"
+
+  # Windowmanager to use (sway / weston / no)
+    WINDOWMANAGER="sway"

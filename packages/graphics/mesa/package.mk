@@ -109,7 +109,8 @@ else
 fi
 
 if [ "${VULKAN_SUPPORT}" = "yes" ]; then
-  PKG_DEPENDS_TARGET+=" ${VULKAN} vulkan-tools"
+#  PKG_DEPENDS_TARGET+=" ${VULKAN} vulkan-tools"
+  PKG_DEPENDS_TARGET+=" ${VULKAN}"
   PKG_MESON_OPTS_TARGET+=" -Dvulkan-drivers=${VULKAN_DRIVERS_MESA// /,}"
 else
   PKG_MESON_OPTS_TARGET+=" -Dvulkan-drivers="
