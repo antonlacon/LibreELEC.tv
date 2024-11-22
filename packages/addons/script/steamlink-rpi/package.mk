@@ -1,17 +1,17 @@
-# SPDX-License-Identifier: GPL-2.0
+# SPDX-License-Identifier: GPL-2.0-only
 # Copyright (C) 2019-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="steamlink-rpi"
 PKG_VERSION="1.0"
-PKG_REV="100"
-PKG_ARCH="arm"
-PKG_ADDON_PROJECTS="RPi2"
+PKG_REV="0"
+PKG_ARCH="aarch64"
+PKG_ADDON_PROJECTS="RPi5"
 PKG_LICENSE="custom"
 PKG_SITE="https://support.steampowered.com/kb_article.php?ref=6153-IFGH-6589"
-PKG_DEPENDS_TARGET="toolchain steamlink-libjpeg-turbo steamlink-libpng steamlink-libXext steamlink-libX11"
+PKG_DEPENDS_TARGET="steamlink-ffmpeg steamlink-icu steamlink-libepoxy steamlink-libjpeg-turbo steamlink-libpng steamlink-wayland steamlink-zstd"
 PKG_SECTION="script"
 PKG_SHORTDESC="Steam Link App for Raspberry Pi"
-PKG_LONGDESC="Installs the Steam Link App for Raspberry Pi 3 or newer from Valve for use in streaming from Steam clients. Addon is not associated with Valve. Steam and the Steam logo are trademarks and/or registered trademarks of Valve Corporation in the U.S. and/or other countries."
+PKG_LONGDESC="Installs the Steam Link App for Raspberry Pi from Valve for use in streaming from Steam clients. Addon is not associated with Valve. Use of Steam Link software is subject to the Steam Subscriber Agreement."
 PKG_TOOLCHAIN="manual"
 
 PKG_IS_ADDON="yes"
@@ -19,25 +19,36 @@ PKG_ADDON_NAME="steamlink-rpi"
 PKG_ADDON_TYPE="xbmc.python.script"
 PKG_ADDON_PROVIDES="executable"
 
-PKG_STEAMLINK_VERSION="1.1.64.162"
-PKG_STEAMLINK_HASH="1ea1c41802bd6cc3efdba7ba258b9d25d5c07cdd1d0ffe9f2d47597588a09155"
+PKG_STEAMLINK_VERSION="1.3.13.281"
+PKG_STEAMLINK_HASH="6773437c2659a93e7b8d4e9c5069315f7dbf701c168a29ac1119f7b69dd7b72e"
 
 addon() {
   # Add needed libraries
   mkdir -p ${ADDON_BUILD}/${PKG_ADDON_ID}/system-libs
 
-  # libpng
-  cp -L $(get_install_dir steamlink-libpng)/usr/lib/libpng16.so.16 ${ADDON_BUILD}/${PKG_ADDON_ID}/system-libs/
+  # ffmpeg
+  cp -L $(get_install_dir steamlink-ffmpeg)/usr/lib/libavcodec.so.59 ${ADDON_BUILD}/${PKG_ADDON_ID}/system-libs/
+  cp -L $(get_install_dir steamlink-ffmpeg)/usr/lib/libavutil.so.57 ${ADDON_BUILD}/${PKG_ADDON_ID}/system-libs/
+
+  # icu
+  cp -L $(get_install_dir steamlink-icu)/usr/lib/libicui18n.so.72 ${ADDON_BUILD}/${PKG_ADDON_ID}/system-libs/
+  cp -L $(get_install_dir steamlink-icu)/usr/lib/libicuuc.so.72 ${ADDON_BUILD}/${PKG_ADDON_ID}/system-libs/
+
+  # libepoxy
+  cp -L $(get_install_dir steamlink-libepoxy)/usr/lib/libepoxy.so.0 ${ADDON_BUILD}/${PKG_ADDON_ID}/system-libs/
 
   # libjpeg-turbo
   cp -L $(get_install_dir steamlink-libjpeg-turbo)/usr/lib/libjpeg.so.62 ${ADDON_BUILD}/${PKG_ADDON_ID}/system-libs/
 
-  # libXext
-  cp -L $(get_install_dir steamlink-libXext)/usr/lib/libXext.so.6 ${ADDON_BUILD}/${PKG_ADDON_ID}/system-libs/
+  # libpng
+  cp -L $(get_install_dir steamlink-libpng)/usr/lib/libpng16.so.16 ${ADDON_BUILD}/${PKG_ADDON_ID}/system-libs/
 
-  # libX11
-  cp -L $(get_install_dir steamlink-libX11)/usr/lib/libX11.so.6 ${ADDON_BUILD}/${PKG_ADDON_ID}/system-libs/
-  cp -L $(get_install_dir steamlink-libX11)/usr/lib/libX11-xcb.so.1 ${ADDON_BUILD}/${PKG_ADDON_ID}/system-libs/
+  # wayland
+  cp -L $(get_install_dir steamlink-wayland)/usr/lib/libwayland-client.so.0 ${ADDON_BUILD}/${PKG_ADDON_ID}/system-libs/
+  cp -L $(get_install_dir steamlink-wayland)/usr/lib/libwayland-egl.so.1 ${ADDON_BUILD}/${PKG_ADDON_ID}/system-libs/
+
+  # zstd
+  cp -L $(get_install_dir steamlink-zstd)/usr/lib/libzstd.so.1 ${ADDON_BUILD}/${PKG_ADDON_ID}/system-libs/
 }
 
 post_install_addon() {

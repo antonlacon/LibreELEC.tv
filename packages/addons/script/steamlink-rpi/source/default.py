@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0
+# SPDX-License-Identifier: GPL-2.0-only
 # Copyright (C) 2019-present Team LibreELEC (https://libreelec.tv)
 
 import os
@@ -17,8 +17,8 @@ from urllib.request import urlretrieve
 
 STEAMLINK_VERSION = "@STEAMLINK_VERSION@"
 STEAMLINK_HASH = "@STEAMLINK_HASH@"
-STEAMLINK_TARBALL_NAME = f"steamlink-rpi3-{STEAMLINK_VERSION}.tar.gz"
-STEAMLINK_URL = f"http://media.steampowered.com/steamlink/rpi/{STEAMLINK_TARBALL_NAME}"
+STEAMLINK_TARBALL_NAME = f"steamlink-rpi-bookworm-arm64-{STEAMLINK_VERSION}.tar.gz"
+STEAMLINK_URL = f"http://media.steampowered.com/steamlink/rpi/bookworm/arm64/{STEAMLINK_TARBALL_NAME}"
 ADDON_DIR = xbmcaddon.Addon().getAddonInfo("path")
 PROGRESS_BAR = xbmcgui.DialogProgress()
 
@@ -33,17 +33,6 @@ def GetSHA256Hash(file_name):
         break
       SHA256HASH.update(data_block)
   return SHA256HASH.hexdigest()
-
-def GetRPiProcessor():
-  """ Use vcgencmd to obtain cpu identifier as int """
-  VC_CMD_OUTPUT=subprocess.check_output(["vcgencmd", "otp_dump"], encoding="utf-8")
-
-  for line in VC_CMD_OUTPUT.splitlines():
-    if line[0:3] == "30:":
-      PROCESSOR=line.split(":")[1] # entire processor id
-      return int(PROCESSOR[4:5])   # only cpu id
-
-  return 0
 
 def OutputFileContents(file):
   """ Read everything in file """
@@ -86,11 +75,6 @@ def DownloadSteamlink():
 
 def PrepareSteamlink():
   """ System preparation before launching Steam Link """
-
-  # Disable Steam Link's cpu check
-  if not os.path.isfile(f"{ADDON_DIR}/steamlink/.ignore_cpuinfo"):
-    Path(f"{ADDON_DIR}/steamlink/.ignore_cpuinfo").touch()
-
   # Add system libraries to bundled
   for file in os.listdir(f"{ADDON_DIR}/system-libs/"):
     os.symlink(f"{ADDON_DIR}/system-libs/{file}", f"{ADDON_DIR}/steamlink/lib/{file}")
@@ -104,11 +88,6 @@ def PrepareSteamlink():
   Path(f"{ADDON_DIR}/prep.ok").touch()
 
 def StartSteamlink():
-  # Check if running on RPi3 or higher
-  if not os.path.isfile(f"{ADDON_DIR}/steamlink/.ignore_cpuinfo") and GetRPiProcessor() < 2:
-    xbmcgui.Dialog.notification("Steam Link", "Steam Link will not run on this hardware. Aborting...", xbmcgui.NOTIFICATION_INFO, 5000)
-    exit(1)
-
   # Check if addon wants to update Steam Link
   if os.path.isfile(f"{ADDON_DIR}/steamlink/version.txt"):
     STEAMLINK_INSTALLED_VERSION = OutputFileContents(f"{ADDON_DIR}/steamlink/version.txt").rstrip()
