@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0
+# SPDX-License-Identifier: GPL-2.0-only
 # Copyright (C) 2019-present Team LibreELEC (https://libreelec.tv)
 
 import os
@@ -17,8 +17,8 @@ from urllib.request import urlretrieve
 
 STEAMLINK_VERSION = "@STEAMLINK_VERSION@"
 STEAMLINK_HASH = "@STEAMLINK_HASH@"
-STEAMLINK_TARBALL_NAME = f"steamlink-rpi3-{STEAMLINK_VERSION}.tar.gz"
-STEAMLINK_URL = f"http://media.steampowered.com/steamlink/rpi/{STEAMLINK_TARBALL_NAME}"
+STEAMLINK_TARBALL_NAME = f"steamlink-rpi-bookworm-arm64-{STEAMLINK_VERSION}.tar.gz"
+STEAMLINK_URL = f"http://media.steampowered.com/steamlink/rpi/bookworm/arm64/{STEAMLINK_TARBALL_NAME}"
 ADDON_DIR = xbmcaddon.Addon().getAddonInfo("path")
 PROGRESS_BAR = xbmcgui.DialogProgress()
 
@@ -105,9 +105,9 @@ def PrepareSteamlink():
 
 def StartSteamlink():
   # Check if running on RPi3 or higher
-  if not os.path.isfile(f"{ADDON_DIR}/steamlink/.ignore_cpuinfo") and GetRPiProcessor() < 2:
-    xbmcgui.Dialog.notification("Steam Link", "Steam Link will not run on this hardware. Aborting...", xbmcgui.NOTIFICATION_INFO, 5000)
-    exit(1)
+#  if not os.path.isfile(f"{ADDON_DIR}/steamlink/.ignore_cpuinfo") and GetRPiProcessor() < 2:
+#    xbmcgui.Dialog.notification("Steam Link", "Steam Link will not run on this hardware. Aborting...", xbmcgui.NOTIFICATION_INFO, 5000)
+#    exit(1)
 
   # Check if addon wants to update Steam Link
   if os.path.isfile(f"{ADDON_DIR}/steamlink/version.txt"):
