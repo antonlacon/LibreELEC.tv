@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# SPDX-License-Identifier: GPL-2.0
+# SPDX-License-Identifier: GPL-2.0-only
 # Copyright (C) 2019-present Team LibreELEC (https://libreelec.tv)
 
 . /etc/profile
@@ -25,22 +25,17 @@ if [ $(grep -c "/lib/udev/rules.d" /proc/mounts) -eq 0 ]; then
   udevadm trigger
 fi
 
-# use alsa for steamlink; make sure a sound card is present
-if [ ! -d /proc/asound ]; then
-  dtparam audio=on
-fi
-
 # Launch steamlink
-# xxx: shutdown kodi or controller input goes to kodi too
+# controller input goes to kodi if it is running
 systemctl stop kodi
-# xxx: shutdown pulseaudio or no sound
-systemctl stop pulseaudio
+# xxx: assume alsa audio by default
+export PULSE_SERVER="none"
+export SDL_AUDIODRIVER="alsa"
 ${ADDON_DIR}/steamlink/steamlink.sh
 sleep 2
 # Cleanup
 umount /lib/udev/rules.d
 rm /tmp/steamlink.watchdog
-systemctl start pulseaudio
 systemctl start kodi
 
 exit 0
