@@ -23,6 +23,14 @@ ADDON_DIR = xbmcaddon.Addon().getAddonInfo("path")
 PROGRESS_BAR = xbmcgui.DialogProgress()
 
 
+def Execute(command, get_result=False):
+  """ Run command """
+  try:
+    cmd_status = subprocess.run(command, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  except subprocess.CalledProcessError as e:
+    return '' if get_result else None
+  return cmd_status.stdout.decode() if get_result else None
+
 def GetSHA256Hash(file_name):
   """ Get sha256sum of file_name in 8kb chunks """
   with open(file_name,"rb") as file:
@@ -79,11 +87,6 @@ def PrepareSteamlink():
   for file in os.listdir(f"{ADDON_DIR}/system-libs/"):
     os.symlink(f"{ADDON_DIR}/system-libs/{file}", f"{ADDON_DIR}/steamlink/lib/{file}")
 
-  # systemd setup
-  if not os.path.isfile(f"{str(Path.home())}/.config/system.d/steamlink-rpi.watchdog.service"):
-    os.symlink(f"{ADDON_DIR}/system.d/steamlink-rpi.watchdog.service", f"{str(Path.home())}/.config/system.d/steamlink-rpi.watchdog.service")
-  subprocess.run(["systemctl", "enable", f"{str(Path.home())}/.config/system.d/steamlink-rpi.watchdog.service"])
-
   # Finalize
   Path(f"{ADDON_DIR}/prep.ok").touch()
 
@@ -104,8 +107,6 @@ def StartSteamlink():
 
   # Start Steamlink
   xbmcgui.Dialog().notification("Steam Link", "Starting Steam Link", xbmcgui.NOTIFICATION_INFO, 3000)
-  Path("/tmp/steamlink.watchdog").touch()
-  subprocess.run(["systemctl", "start", "steamlink-rpi.watchdog.service"])
-
+  steamlink_start_result = Execute(f"systemd-run {ADDON_DIR}/bin/steamlink-start.sh")
 
 StartSteamlink()

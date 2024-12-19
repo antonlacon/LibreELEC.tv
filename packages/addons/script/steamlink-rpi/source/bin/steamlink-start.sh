@@ -8,9 +8,6 @@ oe_setup_addon script.steamlink-rpi
 
 # Steamlink not ready; abort
 if [ ! -f ${ADDON_DIR}/prep.ok ]; then
-  if [ -f /tmp/steamlink.watchdog ]; then
-    rm /tmp/steamlink.watchdog
-  fi
   exit 0
 fi
 
