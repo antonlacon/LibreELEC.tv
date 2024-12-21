@@ -8,7 +8,7 @@ PKG_ARCH="aarch64"
 PKG_ADDON_PROJECTS="RPi5"
 PKG_LICENSE="custom"
 PKG_SITE="https://support.steampowered.com/kb_article.php?ref=6153-IFGH-6589"
-PKG_DEPENDS_TARGET="double-conversion steamlink-ffmpeg steamlink-icu steamlink-libepoxy steamlink-libjpeg-turbo steamlink-libpng steamlink-wayland steamlink-zstd"
+PKG_DEPENDS_TARGET="double-conversion steamlink-ffmpeg steamlink-icu steamlink-libepoxy steamlink-libjpeg-turbo steamlink-libpng steamlink-mtdev steamlink-wayland steamlink-zstd"
 PKG_SECTION="script"
 PKG_SHORTDESC="Steam Link App for Raspberry Pi"
 PKG_LONGDESC="Installs the Steam Link App for Raspberry Pi from Valve for use in streaming from Steam clients. Addon is not associated with Valve. Use of Steam Link software is subject to the Steam Subscriber Agreement."
@@ -45,6 +45,9 @@ addon() {
 
   # libpng
   cp -L $(get_install_dir steamlink-libpng)/usr/lib/libpng16.so.16 ${ADDON_BUILD}/${PKG_ADDON_ID}/system-libs/
+
+  # mtdev
+  cp -L $(get_install_dir steamlink-mtdev)/usr/lib/libmtdev.so.1 ${ADDON_BUILD}/${PKG_ADDON_ID}/system-libs/
 
   # wayland
   cp -L $(get_install_dir steamlink-wayland)/usr/lib/libwayland-client.so.0 ${ADDON_BUILD}/${PKG_ADDON_ID}/system-libs/
