@@ -8,7 +8,7 @@ PKG_ARCH="aarch64"
 PKG_ADDON_PROJECTS="RPi5"
 PKG_LICENSE="custom"
 PKG_SITE="https://support.steampowered.com/kb_article.php?ref=6153-IFGH-6589"
-PKG_DEPENDS_TARGET="double-conversion libcom-err libkeyutils md4c steamlink-ffmpeg steamlink-icu steamlink-libepoxy steamlink-libjpeg-turbo steamlink-libpng steamlink-mtdev steamlink-wayland steamlink-zstd"
+PKG_DEPENDS_TARGET="double-conversion krb5 libcom-err libkeyutils md4c steamlink-ffmpeg steamlink-icu steamlink-libepoxy steamlink-libjpeg-turbo steamlink-libpng steamlink-mtdev steamlink-wayland steamlink-zstd"
 PKG_SECTION="script"
 PKG_SHORTDESC="Steam Link App for Raspberry Pi"
 PKG_LONGDESC="Installs the Steam Link App for Raspberry Pi from Valve for use in streaming from Steam clients. Addon is not associated with Valve. Use of Steam Link software is subject to the Steam Subscriber Agreement."
@@ -29,8 +29,15 @@ addon() {
   # double-conversion
   cp -L $(get_install_dir double-conversion)/usr/lib/libdouble-conversion.so.3 ${ADDON_BUILD}/${PKG_ADDON_ID}/system-libs/
 
+  # krb5
+  cp -L $(get_install_dir krb5)/usr/lib/libkrb5.so.3 ${ADDON_BUILD}/${PKG_ADDON_ID}/system-libs/
+  cp -L $(get_install_dir krb5)/usr/lib/libgssapi_krb5.so.2 ${ADDON_BUILD}/${PKG_ADDON_ID}/system-libs/
+  cp -L $(get_install_dir krb5)/usr/lib/libk5crypto.so.3 ${ADDON_BUILD}/${PKG_ADDON_ID}/system-libs/
+  cp -L $(get_install_dir krb5)/usr/lib/libcom_err.so.3 ${ADDON_BUILD}/${PKG_ADDON_ID}/system-libs/
+  cp -L $(get_install_dir krb5)/usr/lib/libkrb5support.so.0 ${ADDON_BUILD}/${PKG_ADDON_ID}/system-libs/
+
   # libcomm-err
-  cp -L $(get_install_dir libcom-err)/usr/lib/libcom_err.so.2 ${ADDON_BUILD}/${PKG_ADDON_ID}/system-libs/
+#  cp -L $(get_install_dir libcom-err)/usr/lib/libcom_err.so.2 ${ADDON_BUILD}/${PKG_ADDON_ID}/system-libs/
 
   # libkeyutils
   cp -L $(get_install_dir libkeyutils)/usr/lib/libkeyutils.so.1 ${ADDON_BUILD}/${PKG_ADDON_ID}/system-libs/
