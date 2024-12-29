@@ -8,7 +8,7 @@ PKG_ARCH="aarch64"
 PKG_ADDON_PROJECTS="RPi4 RPi5"
 PKG_LICENSE="custom"
 PKG_SITE="https://support.steampowered.com/kb_article.php?ref=6153-IFGH-6589"
-PKG_DEPENDS_TARGET="double-conversion krb5 libkeyutils md4c zstd steamlink-ffmpeg steamlink-icu steamlink-libepoxy steamlink-libjpeg-turbo steamlink-libpng steamlink-mtdev steamlink-wayland"
+PKG_DEPENDS_TARGET="double-conversion krb5 libkeyutils md4c unix_ar zstd steamlink-ffmpeg steamlink-libepoxy steamlink-libjpeg-turbo steamlink-libpng steamlink-mtdev steamlink-wayland"
 PKG_SECTION="script.program"
 PKG_SHORTDESC="Steam Link App for Raspberry Pi"
 PKG_LONGDESC="Installs the Steam Link App for Raspberry Pi from Valve for use in streaming from Steam clients. Addon is not associated with Valve. Use of Steam Link software is subject to the Steam Subscriber Agreement."
@@ -21,9 +21,12 @@ PKG_ADDON_PROVIDES="executable"
 
 PKG_STEAMLINK_VERSION="1.3.13.281"
 PKG_STEAMLINK_HASH="6773437c2659a93e7b8d4e9c5069315f7dbf701c168a29ac1119f7b69dd7b72e"
+PKG_ICU_URL="http://http.us.debian.org/debian/pool/main/i/icu/libicu72_72.1-3+deb12u1_arm64.deb"
+PKG_ICU_HASH="4f5d892fd81110435e45ed0a5f1b12899d7ff989d51db283cbc043f5631646d8"
 
 addon() {
   # Add needed libraries
+  mkdir -p ${ADDON_BUILD}/${PKG_ADDON_ID}/resources
   mkdir -p ${ADDON_BUILD}/${PKG_ADDON_ID}/system-libs
 
   # double-conversion
@@ -42,14 +45,13 @@ addon() {
   # md4c
   cp -L $(get_install_dir md4c)/usr/lib/libmd4c.so.0 ${ADDON_BUILD}/${PKG_ADDON_ID}/system-libs/
 
+  # unix_ar
+  cp -L $(get_build_dir unix_ar)/unix_ar.py ${ADDON_BUILD}/${PKG_ADDON_ID}/resources/
+
   # ffmpeg
   cp -L $(get_install_dir steamlink-ffmpeg)/usr/lib/libavcodec.so.59 ${ADDON_BUILD}/${PKG_ADDON_ID}/system-libs/
   cp -L $(get_install_dir steamlink-ffmpeg)/usr/lib/libavutil.so.57 ${ADDON_BUILD}/${PKG_ADDON_ID}/system-libs/
-
-  # icu
-  cp -L $(get_install_dir steamlink-icu)/usr/lib/libicudata.so.72 ${ADDON_BUILD}/${PKG_ADDON_ID}/system-libs/
-  cp -L $(get_install_dir steamlink-icu)/usr/lib/libicui18n.so.72 ${ADDON_BUILD}/${PKG_ADDON_ID}/system-libs/
-  cp -L $(get_install_dir steamlink-icu)/usr/lib/libicuuc.so.72 ${ADDON_BUILD}/${PKG_ADDON_ID}/system-libs/
+  cp -L $(get_install_dir steamlink-ffmpeg)/usr/lib/libswresample.so.4 ${ADDON_BUILD}/${PKG_ADDON_ID}/system-libs/
 
   # libepoxy
   cp -L $(get_install_dir steamlink-libepoxy)/usr/lib/libepoxy.so.0 ${ADDON_BUILD}/${PKG_ADDON_ID}/system-libs/
@@ -72,5 +74,7 @@ post_install_addon() {
   # Add steamlink version to download to addon
   sed -e "s/@STEAMLINK_VERSION@/${PKG_STEAMLINK_VERSION}/" \
       -e "s/@STEAMLINK_HASH@/${PKG_STEAMLINK_HASH}/" \
+      -e "s#@ICU_URL@#${PKG_ICU_URL}#" \
+      -e "s/@ICU_HASH@/${PKG_ICU_HASH}/" \
       -i ${ADDON_BUILD}/${PKG_ADDON_ID}/default.py
 }
