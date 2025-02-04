@@ -147,6 +147,13 @@ pre_make_target() {
     ${PKG_BUILD}/scripts/config --disable CONFIG_WIREGUARD
   fi
 
+  # enable KSM support if nspawn enabled
+  if [ "${NSPAWN_SUPPORT}" = yes ]; then
+    ${PKG_BUILD}/scripts/config --enable CONFIG_KSM
+  else
+    ${PKG_BUILD}/scripts/config --disable CONFIG_KSM
+  fi
+
   if [ "${TARGET_ARCH}" = "x86_64" ]; then
     # copy some extra firmware to linux tree
     mkdir -p ${PKG_BUILD}/external-firmware
