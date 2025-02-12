@@ -24,7 +24,7 @@ clean_keep_toolchain() {
   # package list from buildplan to create toolchain
   local toolchain_list=$( \
     "${SCRIPTS}/pkgjson" |
-    "${SCRIPTS}/genbuildplan.py" --hide-header --list-packages --build gcc:host ${GENFLAGS} || \
+    "${SCRIPTS}/genbuildplan.py" --hide-header --list-packages --build toolchain:host ${GENFLAGS} || \
     die "error: ${0}: unable to generate toolchain build plan"
   )
 
@@ -42,6 +42,8 @@ clean_keep_toolchain() {
     die "error: ${0}: unable to generate image build plan"
   )
 
+#  echo -e "KEEP LIST\n${toolchain_list}"
+
   # remove entries on toolchain_list from image_list
   while read package; do
       image_list=$(grep -v "${package}" <<< "${image_list}")
@@ -51,9 +53,9 @@ clean_keep_toolchain() {
 #      image_list=$(grep -v "${package}" <<< "${image_list}")
 #  done
 
-  echo -e "PURGED LIST\n${image_list}"
+#  echo -e "PURGED LIST\n${image_list}"
 
-  exit 0
+#  exit 0
 
   # clean remaining packages on image_list from $BUILD
   while read package; do
