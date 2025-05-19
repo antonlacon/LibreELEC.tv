@@ -66,7 +66,7 @@ PKG_MESON_OPTS_TARGET="--libdir=/usr/lib \
                        -Dnologin-path=/usr/sbin/nologin \
                        -Dhomed=disabled \
                        -Dnetworkd=false \
-                       -Dtimedated=false \
+                       -Dtimedated=true \
                        -Dtimesyncd=true \
                        -Dfirstboot=false \
                        -Drandomseed=false \
@@ -174,9 +174,6 @@ post_makeinstall_target() {
   else
     find_file_path scripts/nspawn-symlink && cp -PRv ${FOUND_PATH} ${INSTALL}/usr/bin
   fi
-
-  # remove timedatectl
-  safe_remove ${INSTALL}/usr/bin/timedatectl
 
   # remove unneeded generators
   for gen in ${INSTALL}/usr/lib/systemd/system-generators/*; do
@@ -327,6 +324,7 @@ post_install() {
   enable_service envconfig.service
   enable_service cpufreq.service
   enable_service network-base.service
+  enable_service systemd-timedated.service
   enable_service systemd-timesyncd.service
   enable_service systemd-timesyncd-setup.service
   enable_service systemd-userdbd.socket
