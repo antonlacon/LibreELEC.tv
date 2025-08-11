@@ -1,56 +1,61 @@
-#!/bin/sh
+#!/usr/bin/env python3
 
-# SPDX-License-Identifier: GPL-2.0-or-later
-# Copyright (C) 2009-2014 Stephan Raue (stephan@openelec.tv)
-# Copyright (C) 2020-present Team LibreELEC (https://libreelec.tv)
+# SPDX-License-Identifier: GPL-2.0
+# Copyright (C) 2025-present Team LibreELEC (https://libreelec.tv)
 
-. /usr/lib/libreelec/functions
-
-hidecursor
-
-BACKUP_EXTENSION_LIST=".tar .tar.gz .tar.bz2 .tar.xz"
-for EXTENSION in $BACKUP_EXTENSION_LIST; do
-  BACKUP_FILE=$(find /storage/.restore/ -name "*${EXTENSION}" -print -quit 2>/dev/null)
-  [ -n "${BACKUP_FILE}" ] && break
-done
+import os
+import shutil
+import subprocess
+import tarfile
+import time
 
 
-if [ -f "${BACKUP_FILE}" ]; then
-  echo -e "RESTORE IN PROGRESS\n"
-  echo -e "Please do not reboot or turn off your @DISTRONAME@ device!\n"
+BACKUP_DIR = "/storage/.restore"
 
-  StartProgress spinner "Checking backup file... "
-    tar tf "${BACKUP_FILE}" &>/dev/null
 
-  if [ $? -eq 0 ]; then
-    StopProgress "OK"
+def remove_dir(directory):
+    if os.path.exists(directory):
+        shutil.rmtree(directory):
 
-    echo -e "\nThis may take some time to complete, please be patient.\n"
 
-    StartProgress spinner "Restoring... "
-      rm -rf /storage/.kodi \
-             /storage/.cache \
-             /storage/.config &>/dev/null
-      tar xf "${BACKUP_FILE}" -C / &>/dev/null
-      rm -f "${BACKUP_FILE}" &>/dev/null
-      sync
-      StopProgress "done!"
+file_list = os.listdir(BACKUP_DIR)
+for file in file_list:
+    if file.endswith((".tar", ".tar.gz", ".tar.bz2", ".tar.xz")):
+        backup_file = file
+        print(f"Found backup file: {backup_file}")
+        break
+backup_file_path = f"{BACKUP_DIR}/{backup_file}"
 
-    echo
-    StartProgress countdown "Rebooting in 5s... " 5 "NOW"
-  else
-    StopProgress "FAILED"
+if backup_file and tarfile.is_tarfile(backup_file_path):
+    print("RESTORE IN PROGRESS")
+    print("Please do not reboot or turn off this device!")
+    try:
+        print(f"Extracting file: {backup_file_path}")
+        with tarfile.open(name=backup_file_path, mode="r:*") as tarball:
+            remove_dir("/storage/.kodi")
+            remove_dir("/storage/.cache")
+            remove_dir("/storage/.config")
+            tarball.extractall()
+        print("Extraction successful.")
+        sleep_timer = 5
+    except tarfile.ReadError:
+        print("\nError: Unable to extract file.")
+        sleep_timer = 30
+else:
+    print("\nError: Invalid or corrupt backup file.")
+    sleep_timer = 30
 
-    echo -e "\nBackup file is not valid, or corrupt.\n"
+print("Removing file to allow normal restart...")
+if os.path.exists(backup_file_path):
+    os.remove(backup_file_path)
+    os.sync()
 
-    StartProgress spinner "Removing file to allow normal restart... "
-      rm -f "${BACKUP_FILE}" &>/dev/null
-      sync
-      StopProgress "done"
-
-    echo
-    StartProgress countdown "Rebooting in 30s... " 30 "NOW"
-  fi
-fi
-
-reboot -f
+print(f"Rebooting in {sleep_timer} seconds... ", end="")
+for i in range(1, sleep_timer):
+    print(i, end="")
+    if i < 10:
+        print("\b", end="", flush=True)
+    else:
+        print("\b\b", end="", flush=True)
+    time.sleep(1)
+subprocess.run(["reboot"], ["-f"])
