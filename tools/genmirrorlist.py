@@ -36,6 +36,8 @@ import subprocess
 import shutil
 import sys
 
+from concurrent.futures import ThreadPoolExecutor
+
 
 DISTRO_NAME = 'LibreELEC'
 
@@ -134,26 +136,54 @@ def execute(command):
 
 def parse_distro_info():
     '''Read distro settings from file.'''
-    le_version = None
+    distro_version = None
     os_version = None
     with open(f'{os.getcwd()}/distributions/{DISTRO_NAME}/version', mode='r', encoding='utf-8') as data:
         content = data.read()
     for line in content.splitlines():
         line = line.strip()
-        if line[0:17] == 'LIBREELEC_VERSION':
-            le_version = line.split('=')[1].strip('\"')
-        elif line[0:10] == 'OS_VERSION':
+        if line.startswith('DISTRO_VERSION'):
+            distro_version = line.split('=')[1].strip('\"')
+        elif line.startswith('OS_VERSION'):
             os_version = line.split('=')[1].strip('\"')
-        if le_version and os_version:
+        if distro_version and os_version:
             break
-    return le_version, os_version
+    return distro_version, os_version
+
+
+def get_packages(build_setup):
+    pkg_list = []
+    cmd_build = f'PROJECT={build_setup[0]} DEVICE={build_setup[1]} ARCH={build_setup[2]}'
+    if build_setup[3]:
+        cmd_build = f'{cmd_build} UBOOT_SYSTEM={build_setup[3]}'
+    cmd_result = execute(f'{cmd_build} scripts/pkgjson | scripts/genbuildplan.py --hide-header --list-packages --build image')
+    if cmd_result:
+        for item in cmd_result.splitlines():
+            pkg_url = None
+            # get package details
+            pkg_details = execute(f'{cmd_build} tools/pkginfo --strip {item}').strip()
+            for line in pkg_details.splitlines():
+                if line.startswith('PKG_URL'):
+                    pkg_url = line.split('=')[-1].strip('"')
+                    break
+            # add package and filename to project list if not present
+            if pkg_url and [item, pkg_url] not in pkg_list:
+                pkg_list.append([item, pkg_url])
+    return pkg_list
 
 
 # build list of packages with desired versions to keep
 def get_git_packagelist():
     '''Create list of packages, their source package filenames, and URL to download for every setup in builds'''
-    if args.all or args.builddirs:
+    if args.all:
         builds = builds_all
+    elif args.builddirs:
+        distro_version, os_version = parse_distro_info()
+        builds = builds_all
+        # remove entries without a build directory
+        for build in list(builds):
+            if not os.path.isdir(f'{os.getcwd()}/build.{DISTRO_NAME}-{build[1]}.{build[2]}-{os_version}-{distro_version}'):
+                builds.remove(build)
     else:
         project = os.getenv('PROJECT')
         device = os.getenv('DEVICE')
@@ -164,32 +194,16 @@ def get_git_packagelist():
         else:
             print('Error: Unkown build. Set PROJECT, DEVICE, ARCH and, if needed, UBOOT_SYSTEM or invoke with --all')
             sys.exit(1)
-    pkg_list = []
 
-    if args.builddirs:
-        le_version, os_version = parse_distro_info()
-    for build in builds:
-        # skip entries from builds_all if not build directory present for it
-        if args.builddirs and not os.path.isdir(f'{os.getcwd()}/build.{DISTRO_NAME}-{build[1]}.{build[2]}-{os_version}-{le_version}'):
-            continue
-        # build list of packages that go into each build
-        cmd_build = f'PROJECT={build[0]} DEVICE={build[1]} ARCH={build[2]}'
-        if build[3]:
-            cmd_build = f'{cmd_build} UBOOT_SYSTEM={build[3]}'
-        cmd_buildplan = f'{cmd_build} scripts/pkgjson | scripts/genbuildplan.py --hide-header --list-packages --build image'
-        cmd_result = execute(f'{cmd_buildplan}')
-        if cmd_result:
-            for item in cmd_result.splitlines():
-                pkg_url = None
-                # get package details
-                pkg_details = execute(f'{cmd_build} tools/pkginfo --strip {item}').strip()
-                for line in pkg_details.splitlines():
-                    if line.startswith('PKG_URL'):
-                        pkg_url = line.split('=')[-1].strip('"')
-                        break
-                # add package and filename to master list if not present
-                if pkg_url and [item, pkg_url] not in pkg_list:
-                    pkg_list.append([item, pkg_url])
+    pkg_list = []
+    # this returns a list of lists with all the desired packages and URLs
+    with ThreadPoolExecutor(max_workers=os.cpu_count()) as executor:
+        results = list(executor.map(get_packages, builds))
+    if results:
+        for pkg_set in results:
+            for package in pkg_set:
+                if package not in pkg_list:
+                    pkg_list.append(package)
     return pkg_list
 
 
