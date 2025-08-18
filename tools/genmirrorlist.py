@@ -134,8 +134,8 @@ def execute(command):
     return cmd_status.stdout.decode()
 
 
-def parse_distro_info():
-    '''Read distro settings from file.'''
+def parse_distro_version():
+    '''Read distro version settings from file.'''
     distro_version = None
     os_version = None
     with open(f'{os.getcwd()}/distributions/{DISTRO_NAME}/version', mode='r', encoding='utf-8') as data:
@@ -149,6 +149,19 @@ def parse_distro_info():
         if distro_version and os_version:
             break
     return distro_version, os_version
+
+
+def parse_distro_options():
+    '''Read distro options sttings from file.'''
+    distro_mirror = None
+    with open(f'{os.getcwd()}/distributions/{DISTRO_NAME}/options', mode='r', encoding='utf-8') as data:
+        content = data.read()
+    for line in content.splitlines():
+        line = line.strip()
+        if line.startswith('DISTRO_MIRROR'):
+            distro_mirror = line.partition('=')[2].strip('\"')
+            break
+    return distro_mirror
 
 
 def get_packages(build_setup):
@@ -175,10 +188,11 @@ def get_packages(build_setup):
 # build list of packages with desired versions to keep
 def get_git_packagelist():
     '''Create list of packages, their source package filenames, and URL to download for every setup in builds'''
+    distro_mirror = parse_distro_options()
     if args.all:
         builds = builds_all
     elif args.builddirs:
-        distro_version, os_version = parse_distro_info()
+        distro_version, os_version = parse_distro_version()
         builds = builds_all
         # remove entries without a build directory
         for build in list(builds):
@@ -203,7 +217,7 @@ def get_git_packagelist():
         for pkg_set in results:
             for package in pkg_set:
                 if package not in pkg_list:
-                    pkg_list.append(package)
+                    pkg_list.append([package[0], package[1], f'{distro_mirror}/{package[0]}/{package[1]}'])
     return pkg_list
 
 
@@ -237,8 +251,8 @@ if __name__ == '__main__':
         if not os.path.isfile(export_path):
             with open(export_path, mode='w', encoding='utf-8') as export_file:
                 for package in pkg_list:
-                    export_file.write(f'{package[0]} {package[1]}\n')
+                    export_file.write(f'{package[0]} {package[1]} {package[2]}\n')
             print(f'Exported list of files to: {export_path}')
     else:
         for package in pkg_list:
-            print(f'{package[0]} {package[1]}')
+            print(f'{package[0]} {package[1]} {package[2]}')
