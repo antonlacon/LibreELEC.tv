@@ -143,9 +143,9 @@ def parse_distro_info():
     for line in content.splitlines():
         line = line.strip()
         if line.startswith('DISTRO_VERSION'):
-            distro_version = line.split('=')[1].strip('\"')
+            distro_version = line.partition('=')[2].strip('\"')
         elif line.startswith('OS_VERSION'):
-            os_version = line.split('=')[1].strip('\"')
+            os_version = line.partition('=')[2].strip('\"')
         if distro_version and os_version:
             break
     return distro_version, os_version
@@ -164,7 +164,7 @@ def get_packages(build_setup):
             pkg_details = execute(f'{cmd_build} tools/pkginfo --strip {item}').strip()
             for line in pkg_details.splitlines():
                 if line.startswith('PKG_URL'):
-                    pkg_url = line.split('=')[-1].strip('"')
+                    pkg_url = line.partition('=')[2].strip('"')
                     break
             # add package and filename to project list if not present
             if pkg_url and [item, pkg_url] not in pkg_list:
