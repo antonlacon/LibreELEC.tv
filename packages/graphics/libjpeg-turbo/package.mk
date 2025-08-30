@@ -15,12 +15,12 @@ PKG_BUILD_FLAGS="+pic +pic:host"
 
 PKG_CMAKE_OPTS_HOST="-DENABLE_STATIC=ON \
                      -DENABLE_SHARED=OFF \
-                     -DWITH_JPEG8=ON \
+                     -DWITH_JPEG8=OFF \
                      -DWITH_SIMD=OFF"
 
-PKG_CMAKE_OPTS_TARGET="-DENABLE_STATIC=ON \
-                       -DENABLE_SHARED=OFF \
-                       -DWITH_JPEG8=ON"
+PKG_CMAKE_OPTS_TARGET="-DENABLE_STATIC=OFF \
+                       -DENABLE_SHARED=ON \
+                       -DWITH_JPEG8=OFF"
 
 if target_has_feature "(neon|sse)"; then
   PKG_CMAKE_OPTS_TARGET+=" -DWITH_SIMD=ON"
