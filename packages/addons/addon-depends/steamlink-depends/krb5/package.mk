@@ -2,12 +2,12 @@
 # Copyright (C) 2024-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="krb5"
-PKG_VERSION="1.21.3"
-PKG_SHA256="b7a4cd5ead67fb08b980b21abd150ff7217e85ea320c9ed0c6dadd304840ad35"
+PKG_VERSION="1.22.1"
+PKG_SHA256="1a8832b8cad923ebbf1394f67e2efcf41e3a49f460285a66e35adec8fa0053af"
 PKG_LICENSE="MIT"
 PKG_SITE="https://web.mit.edu/kerberos/"
 # XXX bump on major version change
-PKG_URL="https://kerberos.org/dist/krb5/1.21/krb5-${PKG_VERSION}.tar.gz"
+PKG_URL="https://kerberos.org/dist/krb5/1.22/krb5-${PKG_VERSION}.tar.gz"
 PKG_DEPENDS_TARGET="toolchain libkeyutils"
 PKG_LONGDESC="Kerberos is a network authentication protocol. It is designed to provide strong authentication for client/server applications by using secret-key cryptography."
 PKG_TOOLCHAIN="autotools"
