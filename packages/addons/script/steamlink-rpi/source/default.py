@@ -84,6 +84,9 @@ def PrepareSteamlink():
   for file in os.listdir(f"{ADDON_DIR}/system-libs/"):
     os.symlink(f"{ADDON_DIR}/system-libs/{file}", f"{ADDON_DIR}/steamlink/lib/{file}")
 
+  # Disable 64-bit architecture test
+  Path(f"{ADDON_DIR}/steamlink/.ignore_arch").touch()
+
   # Finalize
   Path(f"{ADDON_DIR}/prep.ok").touch()
 
