@@ -3,8 +3,8 @@
 # Copyright (C) 2017-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="steamlink-ffmpeg"
-PKG_VERSION="5.1.6"
-PKG_SHA256="f4fa066278f7a47feab316fef905f4db0d5e9b589451949740f83972b30901bd"
+PKG_VERSION="5.1.7"
+PKG_SHA256="27d87965c5b0ab857a0092aeb9f55d975becb7126d83aefe39ae24102492180b"
 PKG_LICENSE="GPL-3.0-only"
 PKG_SITE="https://ffmpeg.org"
 PKG_URL="http://ffmpeg.org/releases/ffmpeg-${PKG_VERSION}.tar.xz"
