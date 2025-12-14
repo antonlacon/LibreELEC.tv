@@ -18,13 +18,13 @@ clean_package() {
   for i in "${BUILD}/build/${1}-"* \
     "${BUILD}/install_pkg/${1}-"* \
     "${BUILD}/install_init/${1}-"*; do
-    if [ -d "${i}" -a -f "${i}/.libreelec-unpack" ]; then
+    if [ -d "${i}" ] && [ -f "${i}/.libreelec-unpack" ]; then
       . "${i}/.libreelec-unpack"
       if [ "${STAMP_PKG_NAME}" = "${1}" ]; then
         build_msg "CLR_WARNING" "*" "$(print_color "CLR_WARNING_DIM" "Removing ${i} ...")"
         rm -rf "${i}"
       fi
-    elif [ -d "${i}" -a -f "${i}/.libreelec-package" ]; then
+    elif [ -d "${i}" ] && [ -f "${i}/.libreelec-package" ]; then
       # force clean if no stamp found (previous unpack failed)
       . "${i}/.libreelec-package"
       if [ "${INFO_PKG_NAME}" = "${1}" ]; then
@@ -42,7 +42,7 @@ clean_package() {
   rm -f "${STAMPS}/${1}/build_"*
 }
 
-if [ "${1}" = "--all" -a -n "${2}" ]; then
+if [ "${1}" = "--all" ] && [ -n "${2}" ]; then
   for build_dir in $(ls -1d "${BUILD_ROOT}/${BUILD_BASE}."*); do
     load_build_config "${build_dir}" && "${SCRIPTS}/clean" "${2}"
   done
