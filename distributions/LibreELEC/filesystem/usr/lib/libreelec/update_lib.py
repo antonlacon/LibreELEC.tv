@@ -72,14 +72,14 @@ class UpdateSystem():
         with open('/etc/os-release', mode='r', encoding='utf-8') as data:
             content = data.read()
         for line in content.splitlines():
-            if line[0:12] == 'DISTRO_ARCH=':
-                self.current['architecture'] = line.split('=')[1].strip('\"')
-            elif line[0:5] == 'NAME=':
-                self.current['distribution'] = line.split('=')[1].strip('\"')
-            elif line[0:8] == 'VERSION=':
-                self.current['version'] = line.split('=')[1].strip('\"')
-            elif line[0:11] == 'VERSION_ID=':
-                self.current['version_id'] = line.split('=')[1].strip('\"')
+            if line.startswith('DISTRO_ARCH='):
+                self.current['architecture'] = line.partition('=')[2].strip('\"')
+            elif line.startswith('NAME='):
+                self.current['distribution'] = line.partition('=')[2].strip('\"')
+            elif line.startswith('VERSION='):
+                self.current['version'] = line.partition('=')[2].strip('\"')
+            elif line.startswith('VERSION_ID='):
+                self.current['version_id'] = line.partition('=')[2].strip('\"')
             if self.current['architecture'] and self.current['distribution'] and self.current['version'] and self.current['version_id']:
                 break
         # If debugging other devices, change self.current[architecture, distribution, version, version_id] here
