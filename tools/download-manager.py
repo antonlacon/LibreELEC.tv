@@ -195,10 +195,11 @@ def get_packages(build_setup):
             for line in pkg_details.splitlines():
                 if line.startswith('PKG_URL'):
                     pkg_url = line.partition('=')[2].strip('"')
+                    pkg_filename = pkg_url.split('/')[-1]
                     break
             # add package and filename to project list if not present
-            if pkg_url and [item, pkg_url] not in pkg_list:
-                pkg_list.append([item, pkg_url])
+            if pkg_url and pkg_filename and [item, pkg_filename, pkg_url] not in pkg_list:
+                pkg_list.append([item, pkg_filename, pkg_url])
     return pkg_list
 
 
@@ -234,7 +235,7 @@ def get_git_package_list():
         for pkg_set in results:
             for package in pkg_set:
                 if package not in pkg_list:
-                    pkg_list.append([package[0], package[1], f'{distro_mirror}/{package[0]}/{package[1]}'])
+                    pkg_list.append([package[0], package[1], package[2], f'{distro_mirror}/{package[0]}/{package[1]}'])
     return pkg_list
 
 
@@ -361,8 +362,8 @@ if __name__ == '__main__':
             if not os.path.isfile(export_path):
                 with open(export_path, mode='w', encoding='utf-8') as export_file:
                     for package in PKG_LIST:
-                        export_file.write(f'{package[0]} {package[1]} {package[2]}\n')
+                        export_file.write(f'{package[0]} {package[2]} {package[3]}\n')
                 print(f'Exported list of files to: {export_path}')
         else:
             for package in PKG_LIST:
-                print(f'{package[0]} {package[1]} {package[2]}')
+                print(f'{package[0]} {package[2]} {package[3]}')
