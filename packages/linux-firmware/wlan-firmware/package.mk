@@ -7,7 +7,7 @@ PKG_SHA256="cd019a209f1dd0c76caa9cf382231e86ef07e4448ff3c81b3d1d76b6bde6ca67"
 PKG_LICENSE="Free-to-use"
 PKG_SITE="https://github.com/LibreELEC/wlan-firmware"
 PKG_URL="https://github.com/LibreELEC/wlan-firmware/archive/${PKG_VERSION}.tar.gz"
-PKG_DEPENDS_TARGET="toolchain"
+PKG_DEPENDS_TARGET=""
 PKG_LONGDESC="wlan-firmware: firmwares for various WLAN drivers"
 PKG_TOOLCHAIN="manual"
 
