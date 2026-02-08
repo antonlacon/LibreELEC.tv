@@ -8,7 +8,7 @@ PKG_SHA256="d9835b33bea65cf15f41753e215a11e5eca818a6e3bfacaa750aeac12456c24f"
 PKG_LICENSE="GPL"
 PKG_SITE="https://github.com/LibreELEC/LibreELEC.tv"
 PKG_URL="https://github.com/LibreELEC/${PKG_NAME}/archive/${PKG_VERSION}.tar.gz"
-PKG_DEPENDS_TARGET="toolchain"
+PKG_DEPENDS_TARGET=""
 PKG_LONGDESC="Firmware for brcm bluetooth chips used on RaspberryPi devices."
 PKG_TOOLCHAIN="manual"
 
