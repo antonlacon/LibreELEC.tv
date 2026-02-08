@@ -7,7 +7,7 @@ PKG_SHA256="55e47994018c13743485544e7206780ffbb3c8495e704a99636503e6e77abf59"
 PKG_LICENSE="LGPL-3.0-or-later"
 PKG_SITE="https://talloc.samba.org/"
 PKG_URL="https://www.samba.org/ftp/talloc/talloc-${PKG_VERSION}.tar.gz"
-PKG_DEPENDS_TARGET="toolchain"
+PKG_DEPENDS_TARGET="autotools:host gcc:host"
 PKG_LONGDESC="talloc is a hierarchical, reference counted memory pool system with destructors"
 
 configure_package() {
