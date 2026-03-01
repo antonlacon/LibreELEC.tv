@@ -225,20 +225,17 @@ check_is_compatible() {
   old_project_arch="$(get_project_arch "/sysroot")" || return
   new_project_arch="$(get_project_arch "/update")" || return
 
-  # If old or new project/arch isn't available then could be very old (pre-/etc/os-release) build - have to trust it
-  if [ -n "${old_project_arch}" -a -n "${new_project_arch}" ]; then
-    # If the old project/arch is not compatible with the new project/arch then abort...
-    if ! is_compatible "${old_project_arch}" "${new_project_arch}"; then
-      echo ""
-      echo "ERROR: $(basename "${update_filename}") is not compatible with ${old_project_arch} hardware - update cancelled."
-      echo ""
-      echo "Current system: ${old_project_arch}"
-      echo "Update  system: ${new_project_arch}"
-      echo ""
-      echo "Create $UPDATE_ROOT/.nocompat to disable compatibility checks and risk a non-booting system."
-      echo ""
-      return 1
-    fi
+  # If the old project/arch is not compatible with the new project/arch then abort...
+  if ! is_compatible "${old_project_arch}" "${new_project_arch}"; then
+    echo ""
+    echo "ERROR: $(basename "${update_filename}") is not compatible with ${old_project_arch} hardware - update cancelled."
+    echo ""
+    echo "Current system: ${old_project_arch}"
+    echo "Update  system: ${new_project_arch}"
+    echo ""
+    echo "Create $UPDATE_ROOT/.nocompat to disable compatibility checks and risk a non-booting system."
+    echo ""
+    return 1
   fi
 
   return 0
