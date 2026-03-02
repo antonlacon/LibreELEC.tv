@@ -53,7 +53,7 @@ PKG_MESON_OPTS_TARGET="--libdir=/usr/lib \
                        -Dhibernate=false \
                        -Denvironment-d=false \
                        -Dbinfmt=false \
-                       -Drepart=disabled \
+                       -Drepart=enabled \
                        -Dcoredump=false \
                        -Dresolve=false \
                        -Dlogind=true \
@@ -192,7 +192,7 @@ post_makeinstall_target() {
   safe_remove ${INSTALL}/usr/lib/systemd/catalog
 
   # remove partition
-  safe_remove ${INSTALL}/usr/lib/systemd/systemd-growfs
+#  safe_remove ${INSTALL}/usr/lib/systemd/systemd-growfs
   safe_remove ${INSTALL}/usr/lib/systemd/systemd-makefs
 
   # distro preset policy
