@@ -22,18 +22,17 @@ class LibreELEC_Package:
         self.unpacks = []
 
     def __repr__(self):
-        s = f"{name:<9}: {self.name}"
-        s = f"{s}\n{section:<9}: {self.section}"
-
-        for t in self.deps:
-            s = f"{s}\n{t:<9}: {self.deps[t]}"
-
-        s = f"{s}\n{'UNPACKS':<9}: {self.unpacks}"
-
-        s = f"{s}\n{'NEEDS':<9}: {self.wants}"
-        s = f"{s}\n{'WANTED BY':<9}: {self.wantedby}"
-
-        return s
+        parts = [
+            f"{name:<9}: {self.name}",
+            f"{section:<9}: {self.section}"
+        ]
+        parts.extend(f"\n{t:<9}: {self.deps[t]}" for t in self.deps)
+        parts.extend([
+            f"{'UNPACKS':<9}: {self.unpacks}"
+            f"{'NEEDS':<9}: {self.wants}"
+            f"{'WANTED BY':<9}: {self.wantedby}"
+        ])
+        return "\n".join(parts)
 
     def addDependencies(self, target, packages):
         for d in " ".join(packages.split()).split():
@@ -99,16 +98,15 @@ class Node:
         return True
 
     def __repr__(self):
-        s = f"{'name':<9}: {self.name}"
-        s = f"{s}\n{'target':<9}: {self.target}"
-        s = f"{s}\n{'fqname':<9}: {self.fqname}"
-        s = f"{s}\n{'common':<9}: {self.commonName()}"
-        s = f"{s}\n{'section':<9}: {self.section}"
-
-        for e in self.edges:
-            s = f"{s}\nEDGE: {e.fqname}"
-
-        return s
+        header = "\n".join([
+            f"{'name':<9}: {self.name}",
+            f"{'target':<9}: {self.target}",
+            f"{'fqname':<9}: {self.fqname}",
+            f"{'common':<9}: {self.commonName()}",
+            f"{'section':<9}: {self.section}"
+        ])
+        edges = "\n".join(f"EDGE: {e.fqname}" for e in self.edges)
+        return f"{header}{chr(10) + edges if edges else ''}"
 
     def commonName(self):
         return self.name if self.target == "target" else f"{self.name}:{self.target}"
@@ -195,10 +193,10 @@ def dep_resolve(node, resolved, unresolved):
     for edge in node.edges:
         if edge not in resolved:
             if edge in unresolved:
-                raise Exception((
+                raise Exception(
                     f"Circular reference detected: {node.fqname} -> {edge.commonName()}\n"
                     f"Remove {edge.commonName()} from {node.name} package.mk::PKG_DEPENDS_{node.target.upper()}"
-                    ))
+                    )
             dep_resolve(edge, resolved, unresolved)
 
     if node not in resolved:
