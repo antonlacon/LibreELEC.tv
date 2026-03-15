@@ -38,24 +38,24 @@ class LibreELEC_Package:
     def addDependencies(self, target, packages):
         for d in " ".join(packages.split()).split():
             self.deps[target].append(d)
-            name = d.split(":")[0]
+            name = d.partition(":")[0]
             if name not in self.wants and name != self.name:
                 self.wants.append(name)
 
     def delDependency(self, target, package):
         if package in self.deps[target]:
             self.deps[target].remove(package)
-            name = package.split(":")[0]
+            name = package.partition(":")[0]
             if name in self.wants:
                 self.wants.remove(name)
 
     def addReference(self, package):
-        name = package.split(":")[0]
+        name = package.partition(":")[0]
         if name not in self.wantedby:
             self.wantedby.append(name)
 
     def delReference(self, package):
-        name = package.split(":")[0]
+        name = package.partition(":")[0]
         if name in self.wantedby:
             self.wantedby.remove(name)
 
@@ -151,9 +151,9 @@ def initPackage(package):
 
 # Split name:target into components
 def split_package(name):
-    parts = name.split(":")
+    parts = name.partition(":")
     pn = parts[0]
-    pt = parts[1] if len(parts) != 1 else "target"
+    pt = parts[2] if parts[2] else "target"
     return (pn, pt)
 
 # Return a list of packages of the specified type
