@@ -5,6 +5,7 @@
 # Copyright (C) 2019-present Team LibreELEC (https://libreelec.tv)
 
 import sys, os, codecs, json, argparse, re
+from collections import deque, defaultdict
 
 ROOT_PKG = "__root__"
 
@@ -182,23 +183,75 @@ def findbuildpos(node, list):
 
     return list.index(candidate) + 1 if candidate else -1
 
-# Resolve dependencies for a node
+# Resolve dependencies for a node using Kahn's algorithm applied to the reachable subgraph.
 def dep_resolve(node, resolved, unresolved):
-    unresolved.append(node)
+    # Build the reachable subgraph starting from `node`
+    reachable = {}
+    stack = [node]
+    while stack:
+        n = stack.pop()
+        if n.fqname in reachable:
+            continue
+        reachable[n.fqname] = n
+        for e in n.edges:
+            if e.fqname not in reachable:
+                stack.append(e)
 
-    for edge in node.edges:
-        if edge not in resolved:
-            if edge in unresolved:
-                raise Exception(
-                    f"Circular reference detected: {node.fqname} -> {edge.commonName()}\n"
-                    f"Remove {edge.commonName()} from {node.name} package.mk::PKG_DEPENDS_{node.target.upper()}"
-                    )
-            dep_resolve(edge, resolved, unresolved)
+    # Compute indegrees for reachable nodes
+    indeg = defaultdict(int)
+    for fq in reachable.keys():
+        indeg[fq] = 0
+    for n in reachable.values():
+        for e in n.edges:
+            if e.fqname in indeg:
+                indeg[e.fqname] += 1
 
-    if node not in resolved:
-        resolved.append(node)
+    # Initialize queue with zero-indegree nodes
+    q = deque()
+    for fq, d in indeg.items():
+        if d == 0:
+            q.append(reachable[fq])
 
-    unresolved.remove(node)
+    order = []
+    processed = set()
+    queued = set(n.fqname for n in q)
+
+    # Kahn's algorithm main loop
+    while q:
+        n = q.popleft()
+        queued.discard(n.fqname)
+        order.append(n)
+        processed.add(n.fqname)
+        for e in n.edges:
+            if e.fqname in indeg:
+                indeg[e.fqname] -= 1
+                if indeg[e.fqname] == 0:
+                    if e.fqname not in processed and e.fqname not in queued:
+                        q.append(reachable[e.fqname])
+                        queued.add(e.fqname)
+
+    # If not all reachable nodes were processed, there's a cycle
+    if len(order) != len(reachable):
+        unprocessed = [fq for fq in reachable.keys() if fq not in processed]
+        if unprocessed:
+            first = reachable[unprocessed[0]]
+            raise Exception(
+                f"Circular reference detected: {first.fqname} -> {[e.fqname for e in first.edges]}\n"
+                f"Remove {first.commonName()} from {first.name} package.mk::PKG_DEPENDS_{first.target.upper()}"
+            )
+        raise Exception("Circular reference detected in dependency graph.")
+
+    # Append nodes in topological order to resolved, preserving original semantics
+    for n in order:
+        if n not in resolved:
+            resolved.append(n)
+
+    # Remove node from unresolved if present (preserve original behavior)
+    try:
+        if node in unresolved:
+            unresolved.remove(node)
+    except ValueError:
+        pass
 
 # Return a list of build steps for the trigger packages
 def get_build_steps(args, nodes):
@@ -346,7 +399,7 @@ parser.add_argument("--warn-invalid", action="store_true", default=False, \
 parser.add_argument("--ignore-invalid", action="store_true", default=False, \
                     help="Ignore invalid packages.")
 
-group =  parser.add_mutually_exclusive_group()
+group = parser.add_mutually_exclusive_group()
 group.add_argument("--show-wants", action="store_true", \
                     help="Output \"wants\" dependencies for each step.")
 group.add_argument("--hide-wants", action="store_false", dest="show_wants", default=True, \
