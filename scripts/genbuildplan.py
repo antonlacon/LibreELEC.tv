@@ -16,9 +16,8 @@ class LibreELEC_Package:
                      "init":      [],
                      "host":      [],
                      "target":    []}
-        self.wants = []
-        self.wantedby = []
-
+        self.wants = set()
+        self.wantedby = set()
         self.unpacks = []
 
     def __repr__(self):
@@ -38,35 +37,32 @@ class LibreELEC_Package:
         for d in " ".join(packages.split()).split():
             self.deps[target].append(d)
             name = d.partition(":")[0]
-            if name not in self.wants and name != self.name:
-                self.wants.append(name)
+            if name != self.name:
+                self.wants.add(name)
 
     def delDependency(self, target, package):
         if package in self.deps[target]:
             self.deps[target].remove(package)
             name = package.partition(":")[0]
-            if name in self.wants:
-                self.wants.remove(name)
+            self.wants.discard(name)
 
     def addReference(self, package):
         name = package.partition(":")[0]
-        if name not in self.wantedby:
-            self.wantedby.append(name)
+        self.wantedby.add(name)
 
     def delReference(self, package):
         name = package.partition(":")[0]
-        if name in self.wantedby:
-            self.wantedby.remove(name)
+        self.wantedby.discard(name)
 
     def addUnpack(self, packages):
         if packages.strip():
             self.unpacks = packages.strip().split()
 
     def isReferenced(self):
-        return False if self.wants == [] else True
+        return bool(self.wants)
 
     def isWanted(self):
-        return False if self.wantedby == [] else True
+        return bool(self.wantedby)
 
     def references(self, package):
         return package in self.wants
@@ -267,7 +263,8 @@ def processPackages(args, packages):
         for pkgname in packages:
             pkg = packages[pkgname]
             if pkg.isWanted():
-                for opkgname in pkg.wantedby:
+                # iterate over a snapshot list to avoid "set changed size during iteration"
+                for opkgname in list(pkg.wantedby):
                     if opkgname != ROOT_PKG:
                         if not packages[opkgname].isWanted():
                             pkg.delReference(opkgname)
