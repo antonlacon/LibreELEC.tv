@@ -23,8 +23,8 @@ case "${LINUX}" in
     PKG_PATCH_DIRS="default"
     ;;
   raspberrypi)
-    PKG_VERSION="314efcc490d061472fd5077c7b60f36ee99dd1d3" # 6.18.18
-    PKG_SHA256="d2600016a7b845e51c1f78f3497659dc57f07d95f9993a634609fc0dbe207527"
+    PKG_VERSION="2e9acf35e6e973582ee0574713cf2dbc3659f1af" # 6.18.19
+    PKG_SHA256="bc6aec8780edee78435296bc4435b766d063128d7d161644ec3b0de8acfe098c"
     PKG_URL="https://github.com/raspberrypi/linux/archive/${PKG_VERSION}.tar.gz"
     PKG_SOURCE_NAME="linux-${LINUX}-${PKG_VERSION}.tar.gz"
     PKG_PATCH_DIRS="raspberrypi"
