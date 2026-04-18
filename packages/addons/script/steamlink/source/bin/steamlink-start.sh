@@ -49,7 +49,7 @@ if ! mountpoint -q "${UDEV_DIR}"; then
 fi
 
 # Stop Kodi so controller input goes to Steam Link
-systemctl stop kodi || echo "Warning: Kodi do not stop cleanly"
+systemctl stop kodi || echo "Warning: Kodi did not stop cleanly"
 
 # Audio environment for Steam Link
 # xxx: assumes ALSA
