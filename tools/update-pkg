@@ -72,17 +72,21 @@ if [[ ! -v run_sub_package && $(type -t is_sub_package) == function ]]; then
   exit 1
 fi
 
-if [[ $(type -t get_pkg_ver) == function ]]; then
-  get_pkg_ver
-  [ $# -eq 2 ] && {
-    printf "Error: %s does not allow for specification of version\nUsage: $0 PKG_NAME\n" ${pkgname}
-    exit 1
-  }
+if [[ "${GHA_AUTO}" == "true" ]]; then
+  :
 else
-  [ $# -ne 2 ] && {
-    echo "Usage: $0 PKG_NAME PKG_VERSION"
-    exit 1
-  }
+  if [[ $(type -t get_pkg_ver) == function ]]; then
+    get_pkg_ver
+    [ $# -eq 2 ] && {
+      printf "Error: %s does not allow for specification of version\nUsage: $0 PKG_NAME\n" ${pkgname}
+      exit 1
+    }
+  else
+    [ $# -ne 2 ] && {
+      echo "Usage: $0 PKG_NAME PKG_VERSION"
+      exit 1
+    }
+  fi
 fi
 
 PACKAGE_LIST="$(get_pkg_directory ${pkgname})/package.mk"
