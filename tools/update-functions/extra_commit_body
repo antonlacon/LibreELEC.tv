@@ -21,6 +21,9 @@ function extra_commit_body() {
     libheif)
       commit_msg+="\n\nRelease notes:\n- https://github.com/strukturag/libheif/releases/tag/v${pkgver}"
       ;;
+    LibreELEC-settings)
+      commit_msg+="\n\nLog:\n- https://github.com/LibreELEC/service.libreelec.settings/compare/${prevpkgver}...${fullhash}"
+      ;;
     libretro-common)
       commit_msg+="\n\nLog:\n- https://github.com/libretro/libretro-common/compare/${prevpkgver}...${fullhash}"
       ;;
@@ -65,6 +68,18 @@ function extra_commit_body() {
       ;;
     wireless-regdb)
       commit_msg+="\n\nRelease notes:\n- https://git.kernel.org/pub/scm/linux/kernel/git/wens/wireless-regdb.git"
+      ;;
+    amlogic-boot-fip | \
+    brcmfmac_sdio-firmware | \
+    dt-overlays | \
+    dvb-firmware | \
+    eventlircd | \
+    iwlwifi-firmware | \
+    meson-firmware | \
+    misc-firmware | \
+    script.config.vdr | \
+    wlan-firmware)
+      commit_msg+="\n\nLog:\n- https://github.com/LibreELEC/${pkgname}/compare/${prevpkgver}...${fullhash}"
       ;;
   esac
 }
