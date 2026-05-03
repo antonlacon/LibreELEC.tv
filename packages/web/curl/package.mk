@@ -3,18 +3,17 @@
 # Copyright (C) 2018-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="curl"
-PKG_VERSION="8.19.0"
-PKG_SHA256="4eb41489790d19e190d7ac7e18e82857cdd68af8f4e66b292ced562d333f11df"
+PKG_VERSION="8.20.0"
+PKG_SHA256="63fe2dc148ba0ceae89922ef838f7e5c946272c2e78b7c59fab4b79d3ce2b896"
 PKG_LICENSE="MIT"
 PKG_SITE="https://curl.haxx.se"
 PKG_URL="https://curl.haxx.se/download/${PKG_NAME}-${PKG_VERSION}.tar.xz"
-PKG_DEPENDS_TARGET="toolchain zlib openssl rtmpdump libidn2 nghttp2"
+PKG_DEPENDS_TARGET="toolchain zlib openssl libidn2 nghttp2"
 PKG_LONGDESC="Client and library for (HTTP, HTTPS, FTP, ...) transfers."
 
 PKG_CMAKE_OPTS_TARGET="-DENABLE_DEBUG=OFF \
                        -DCURL_LTO=ON \
                        -DCURL_WERROR=ON \
-                       -DENABLE_CURLDEBUG=OFF \
                        -DENABLE_ARES=OFF \
                        -DCURL_DISABLE_HTTP=OFF \
                        -DCURL_DISABLE_FTP=OFF \
@@ -28,7 +27,7 @@ PKG_CMAKE_OPTS_TARGET="-DENABLE_DEBUG=OFF \
                        -DCURL_DISABLE_TFTP=ON \
                        -DCURL_DISABLE_POP3=ON \
                        -DCURL_DISABLE_IMAP=ON \
-                       -DCURL_DISABLE_SMB=ON \
+                       -DCURL_ENABLE_SMB=OFF \
                        -DCURL_DISABLE_SMTP=ON \
                        -DCURL_DISABLE_GOPHER=ON \
                        -DCURL_DISABLE_MQTT=ON \
@@ -50,7 +49,6 @@ PKG_CMAKE_OPTS_TARGET="-DENABLE_DEBUG=OFF \
                        -DCURL_CA_PATH=none \
                        -DCURL_USE_LIBPSL=OFF \
                        -DCURL_USE_LIBSSH2=OFF \
-                       -DUSE_LIBRTMP=ON \
                        -DUSE_LIBIDN2=ON \
                        -DUSE_NGHTTP2=ON"
 
