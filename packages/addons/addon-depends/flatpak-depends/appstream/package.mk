@@ -33,6 +33,10 @@ PKG_MESON_OPTS_TARGET="-Dstemming=false \
                        -Dapidocs=false \
                        -Dman=false"
 
+pre_configure_host() {
+  export PKG_CONFIG_PATH="$(get_build_dir curl)/.host-install/lib/pkgconfig"
+}
+
 pre_configure_target() {
   export TARGET_LDFLAGS+=" -lm"
 }
