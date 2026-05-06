@@ -4,7 +4,7 @@
 PKG_NAME="game.libretro.vice_x128"
 PKG_VERSION="3.10.0.33-Omega"
 PKG_SHA256="9db5463b45df349a4f44bc8cd5882df50fe61639ad6b1bbd93b8e5cf197cfafb"
-PKG_REV="1"
+PKG_REV="2"
 PKG_ARCH="any"
 PKG_LICENSE="GPLv2"
 PKG_SITE="https://github.com/kodi-game/game.libretro.vice_x128"

@@ -4,7 +4,7 @@
 PKG_NAME="game.libretro.beetle-psx"
 PKG_VERSION="0.9.44.76-Omega"
 PKG_SHA256="f39b1ddce5ea7aee1ae59206a3d61b6f08a36685aea57cd53227f638b2528e29"
-PKG_REV="1"
+PKG_REV="2"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="https://github.com/kodi-game/game.libretro.beetle-psx"
