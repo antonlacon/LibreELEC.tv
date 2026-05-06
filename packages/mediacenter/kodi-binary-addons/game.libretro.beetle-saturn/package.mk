@@ -4,7 +4,7 @@
 PKG_NAME="game.libretro.beetle-saturn"
 PKG_VERSION="1.29.0.55-Omega"
 PKG_SHA256="5fc90f0fcafc910ac995986c8282f6cfb8440179ed16bf60aa18a7dd1d45002c"
-PKG_REV="1"
+PKG_REV="2"
 PKG_LICENSE="GPLv2"
 PKG_SITE="https://github.com/kodi-game/game.libretro.beetle-saturn"
 PKG_URL="https://github.com/kodi-game/game.libretro.beetle-saturn/archive/${PKG_VERSION}.tar.gz"

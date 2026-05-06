@@ -4,7 +4,7 @@
 PKG_NAME="game.libretro.vice_xplus4"
 PKG_VERSION="3.10.0.34-Omega"
 PKG_SHA256="eafae4b5f8aea0188ff6dea699d968597ea73d1cc6ffb3e781d9dba4f20318bc"
-PKG_REV="1"
+PKG_REV="2"
 PKG_ARCH="any"
 PKG_LICENSE="GPLv2"
 PKG_SITE="https://github.com/kodi-game/game.libretro.vice_xplus4"

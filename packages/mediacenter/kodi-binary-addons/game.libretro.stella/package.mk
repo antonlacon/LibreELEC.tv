@@ -4,7 +4,7 @@
 PKG_NAME="game.libretro.stella"
 PKG_VERSION="8.0.0.77-Omega"
 PKG_SHA256="67b196ac13ecc92f4aa0fb3394dea78d9dcc1f535e2613fb0ee619dcaf372026"
-PKG_REV="1"
+PKG_REV="2"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="https://github.com/kodi-game/game.libretro.stella"
