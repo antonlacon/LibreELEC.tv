@@ -169,8 +169,8 @@ class Flatpak:
 
         runargs = [self.target]
         if env is not None:
-            for k, v in env:
-                runargs.append('--env={k}={v}')
+            for k, v in env.items():
+                runargs.append(f'--env={k}={v}')
 
         runargs.append(appid)
         if args is not None:
