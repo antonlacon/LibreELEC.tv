@@ -19,6 +19,7 @@ class FlatpakGui:
         self.addon_name = self.addon.getAddonInfo('name')
         self.addon_path = self.addon.getAddonInfo('path')
         self.addon_icon = self.addon.getAddonInfo('icon')
+        self.flatpak_icon = os.path.join(self.addon_path, 'resources', 'media', 'icon.png')
 
         flatpak_exe = os.path.join(self.addon_path, 'bin', 'flatpak')
         flatpak_run = os.path.join(self.addon_path, 'bin', 'flatpak-run-wrapper')
