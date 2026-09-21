@@ -332,7 +332,7 @@ fi
 
 # gzip
 echo "image: compressing..."
-pigz --best --force "${DISK}"
+zstd --force -T0 --format=gzip -9 "${DISK}"
 
 # create sha256 checksum of image
 (
