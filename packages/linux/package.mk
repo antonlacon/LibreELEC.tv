@@ -74,10 +74,6 @@ if [[ "${KERNEL_TARGET}" = uImage* ]]; then
   PKG_DEPENDS_TARGET+=" u-boot-tools:host"
 fi
 
-if [ "${BOOTLOADER}" = "bcm2835-bootloader" -a "${TARGET_KERNEL_ARCH}" = "arm64" ]; then
-  PKG_DEPENDS_TARGET+=" pigz:host"
-fi
-
 # Ensure that the dependencies of initramfs:target are built correctly, but
 # we don't want to add initramfs:target as a direct dependency as we install
 # this "manually" from within linux:target
@@ -329,7 +325,7 @@ makeinstall_target() {
   elif [ "${BOOTLOADER}" = "bcm2835-bootloader" ]; then
     # RPi firmware will decompress gzipped kernels prior to booting
     if [ "${TARGET_KERNEL_ARCH}" = "arm64" ]; then
-      pigz --best --force ${INSTALL}/.image/${KERNEL_TARGET}
+      zstd --force -T0 --format=gzip -9 ${INSTALL}/.image/${KERNEL_TARGET}
       mv ${INSTALL}/.image/${KERNEL_TARGET}.gz ${INSTALL}/.image/${KERNEL_TARGET}
     fi
 
